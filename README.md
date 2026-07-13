@@ -1,6 +1,6 @@
-# guitard.ca MTA-STS Policy
+# guitard.ca MTA-STS policy
 
-This repository publishes the MTA-STS Policy for guitard.ca.
+This repository publishes the MTA-STS policy for guitard.ca.
 
 Production endpoint:
 
