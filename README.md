@@ -1,6 +1,6 @@
 # guitard.ca MTA-STS Policy
 
-This repository publishes the MTA-STS Policy for http://guitard.ca.
+This repository contains the MTA-STS Policy used to operate and maintain https://guitard.ca.
 
 Production endpoint:
 
