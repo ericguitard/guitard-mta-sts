@@ -1,11 +1,8 @@
 # guitard.ca — MTA-STS Policy
 
-This repository contains the MTA-STS policy used to operate and maintain  
-[guitard.ca](https://guitard.ca) in accordance with [RFC 8461](https://datatracker.ietf.org/doc/html/rfc8461).
+This repository contains the MTA-STS policy used to operate and maintain [guitard.ca](https://guitard.ca) in accordance with [RFC 8461](https://datatracker.ietf.org/doc/html/rfc8461).
 
-MTA-STS (Mail Transfer Agent Strict Transport Security) is an email security standard  
-that instructs sending mail servers to authenticate TLS certificates and enforce  
-encrypted delivery to guitard.ca mail infrastructure.
+MTA-STS (Mail Transfer Agent Strict Transport Security) is an email security standard that instructs sending mail servers to authenticate TLS certificates and enforce encrypted delivery to guitard.ca mail infrastructure.
 
 ---
 
@@ -56,23 +53,17 @@ _mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 
 ## Deployment Notes
 
-- Policy changes take effect once the updated file is live at the production endpoint  
-  **and** the `_mta-sts` DNS TXT record `id=` value has been incremented.
-- `max_age` is set to **30 days**. Remote servers may cache this policy for up to 30 days.  
-  Any change to MX hosts or policy mode must be planned well in advance, as rollout  
-  to all sending servers could take up to one year under worst-case caching conditions.
+- Policy changes take effect once the updated file is live at the production endpoint **and** the `_mta-sts` DNS TXT record `id=` value has been incremented.
+- `max_age` is set to **30 days**. Remote servers may cache this policy for up to 30 days. Any change to MX hosts or policy mode must be planned well in advance, as rollout to all sending servers could take up to one year under worst-case caching conditions.
 - To validate the live policy: [MXToolbox MTA-STS Lookup](https://mxtoolbox.com/mta-sts.aspx)
 
 ---
 
 ## Licence Notice
 
-All content in this repository — including configuration files, documentation, and related  
-materials — is proprietary and remains the exclusive property of its respective rights holders.
+All content in this repository — including configuration files, documentation, and related materials — is proprietary and remains the exclusive property of its respective rights holders.
 
-Public access to this repository does not grant any licence or permission to copy, modify,  
-reproduce, distribute, publish, sublicense, create derivative works from, or otherwise use  
-its contents for any purpose, commercial or non-commercial.
+Public access to this repository does not grant any licence or permission to copy, modify, reproduce, distribute, publish, sublicense, create derivative works from, or otherwise use its contents for any purpose, commercial or non-commercial.
 
 Any third-party use requires prior written authorization from the applicable rights holder.
 
