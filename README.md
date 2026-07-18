@@ -58,7 +58,7 @@ _mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 
 - Policy changes take effect once the updated file is live at the production endpoint  
   **and** the `_mta-sts` DNS TXT record `id=` value has been incremented.
-- `max_age` is set to **1 year**. Remote servers may cache this policy for up to 365 days.  
+- `max_age` is set to **30 days**. Remote servers may cache this policy for up to 30 days.  
   Any change to MX hosts or policy mode must be planned well in advance, as rollout  
   to all sending servers could take up to one year under worst-case caching conditions.
 - To validate the live policy: [MXToolbox MTA-STS Lookup](https://mxtoolbox.com/mta-sts.aspx)
