@@ -45,10 +45,6 @@ The policy is activated by a DNS TXT record at `_mta-sts.guitard.ca`:
 _mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 ```
 
-> ⚠️ **Important:** The `id=` value **must be updated** whenever the policy file changes.  
-> Receiving servers use this value to detect stale cached copies. If `id=` is unchanged,  
-> remote servers will not re-fetch the updated policy, regardless of `max_age`.
-
 ---
 
 ## Deployment Notes
@@ -56,6 +52,10 @@ _mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 - Policy changes take effect once the updated file is live at the production endpoint **and** the `_mta-sts` DNS TXT record `id=` value has been incremented.
 - `max_age` is set to **30 days**. Remote servers may cache this policy for up to 30 days. When planning MX changes or a mail provider migration, reduce `max_age` to `86400` (1 day) and wait a full cache cycle before making infrastructure changes.
 - To validate the live policy: [MXToolbox MTA-STS Lookup](https://mxtoolbox.com/mta-sts.aspx)
+
+
+> ⚠️ **Important:** The `id=` value **must be updated** whenever the policy file changes.  
+> Receiving servers use this value to detect stale cached copies. If `id=` is unchanged, remote servers will not re-fetch the updated policy, regardless of `max_age`.
 
 ---
 
