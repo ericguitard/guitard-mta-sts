@@ -24,13 +24,13 @@ mx: mx02.mail.icloud.com
 max_age: 2592000
 ```
 
-| Field     | Value                    | Notes                                                        |
-|-----------|--------------------------|--------------------------------------------------------------|
-| `version` | `STSv1`                  | Required literal                                             |
-| `mode`    | `enforce`                | Sending servers must use TLS or reject delivery              |
-| `mx`      | `mx01.mail.icloud.com`   | Primary iCloud Mail exchanger                                |
-| `mx`      | `mx02.mail.icloud.com`   | Secondary iCloud Mail exchanger                              |
-| `max_age` | `2592000`                | Policy cache duration — 30 days (seconds)                    |
+| Field     | Value                  | Notes                                           |
+|-----------|------------------------|-------------------------------------------------|
+| `version` | `STSv1`                | Required literal                                |
+| `mode`    | `enforce`              | Sending servers must use TLS or reject delivery |
+| `mx`      | `mx01.mail.icloud.com` | Primary iCloud Mail exchanger                   |
+| `mx`      | `mx02.mail.icloud.com` | Secondary iCloud Mail exchanger                 |
+| `max_age` | `2592000`              | Policy cache duration — 30 days (seconds)       |
 
 Mail for guitard.ca is routed through **Apple iCloud Mail** (Custom Domain).  
 The authorised MX hosts are operated by Apple Inc.
@@ -42,7 +42,7 @@ The authorised MX hosts are operated by Apple Inc.
 The policy is activated by a DNS TXT record at `_mta-sts.guitard.ca`:
 
 ```
-_mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
+_mta-sts.guitard.ca.  TXT  "v=STSv1; id=<policy-id>"
 ```
 
 > ⚠️ **Important:** The `id=` value **must be updated** whenever the policy file changes.  
@@ -54,7 +54,7 @@ _mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 ## Deployment Notes
 
 - Policy changes take effect once the updated file is live at the production endpoint **and** the `_mta-sts` DNS TXT record `id=` value has been incremented.
-- `max_age` is set to **30 days**. Remote servers may cache this policy for up to 30 days. Any change to MX hosts or policy mode must be planned well in advance, as rollout to all sending servers could take up to one year under worst-case caching conditions.
+- `max_age` is set to **30 days**. Remote servers may cache this policy for up to 30 days. When planning MX changes or a mail provider migration, reduce `max_age` to `86400` (1 day) and wait a full cache cycle before making infrastructure changes.
 - To validate the live policy: [MXToolbox MTA-STS Lookup](https://mxtoolbox.com/mta-sts.aspx)
 
 ---
