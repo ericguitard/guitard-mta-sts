@@ -42,7 +42,7 @@ The authorised MX hosts are operated by Apple Inc.
 The policy is activated by a DNS TXT record at `_mta-sts.guitard.ca`:
 
 ```
-_mta-sts.guitard.ca.  TXT  "v=STSv1; id=<policy-id>"
+_mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 ```
 
 > ⚠️ **Important:** The `id=` value **must be updated** whenever the policy file changes.  
