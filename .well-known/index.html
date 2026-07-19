@@ -5,32 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>guitard.ca MTA-STS Policy</title>
 
-  <!-- Discourage indexing of this transitional page -->
+  <!-- Transitional page: keep it out of search indexes and leak no referrer -->
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="MTA-STS email security policy for guitard.ca.">
-  <link rel="canonical" href="https://mta-sts.guitard.ca/.well-known/mta-sts.txt">
 
-  <!-- Speed up the handoff to the destination origin -->
-  <link rel="preconnect" href="https://mta-sts.guitard.ca">
-  <link rel="dns-prefetch" href="https://mta-sts.guitard.ca">
+  <!-- Inline data: favicon prevents a stray /favicon.ico 404 in the logs -->
+  <link rel="icon" href="data:,">
 
   <!--
     Hash-based CSP: only the exact inline script below may run — no other
-    script, inline or external, is permitted. If you edit the script, you must
-    recompute its SHA-256 hash (base64 of the digest of the text between the
-    script tags) or the redirect will silently stop working.
+    script, inline or external, is permitted. The hash is the base64 SHA-256
+    of every byte between the <script> tags; if you edit the script (even
+    whitespace), recompute it:
+
+      printf '%s' '<script body>' | openssl dgst -sha256 -binary | openssl base64
+
     Prefer sending this as an HTTP response header in production; note that
     frame-ancestors cannot be set via <meta> and needs the header form.
   -->
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'sha256-6/RIAo69rziN2Hd1RMahuKaPZ2zONa0oXpgkqbxC7V4='; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none';">
+        content="default-src 'none'; script-src 'sha256-6/RIAo69rziN2Hd1RMahuKaPZ2zONa0oXpgkqbxC7V4='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'; upgrade-insecure-requests;">
 
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
 
-  <!-- No-JS / blocked-JS fallback: fires if the script hasn't already redirected -->
+  <!--
+    No-JS / blocked-JS fallback. A 0-second refresh is exempt from WCAG's
+    timing rules (SC 2.2.1) because there is nothing to interact with here.
+    All URLs on this page are absolute so the same file works verbatim at
+    both / and /.well-known/ in the guitard-mta-sts repo.
+  -->
   <meta http-equiv="refresh" content="0; url=https://mta-sts.guitard.ca/.well-known/mta-sts.txt">
 
   <style>
@@ -61,6 +67,10 @@
       text-wrap: balance;
     }
     p { margin: 1rem 0 0; text-wrap: pretty; }
+    .fine {
+      font-size: 0.875rem;
+      opacity: 0.75;
+    }
     a {
       color: LinkText;
       text-underline-offset: 0.15em;
@@ -70,6 +80,11 @@
       outline: 0.2rem solid Highlight;
       outline-offset: 0.2rem;
       border-radius: 0.125rem;
+    }
+    code {
+      font-family: ui-monospace, monospace;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
     }
     .spinner {
       inline-size: 1.5rem;
@@ -88,19 +103,29 @@
   </style>
 
   <!--
-    Redirect as early as possible; location.replace avoids a history entry.
-    Kept on ONE line with no surrounding whitespace: the CSP hash covers every
-    byte between the script tags, so reformatting/minification would break it.
+    Redirect as early as possible; location.replace avoids polluting history,
+    so Back never bounces the visitor into this page again. Kept on ONE line
+    with no surrounding whitespace: the CSP hash covers every byte between
+    the script tags, so reformatting/minification would break it.
   -->
   <script>try{location.replace("https://mta-sts.guitard.ca/.well-known/mta-sts.txt")}catch(e){window.location.href="https://mta-sts.guitard.ca/.well-known/mta-sts.txt"}</script>
 </head>
 <body>
   <main>
     <div class="spinner" aria-hidden="true"></div>
-    <h1>guitard.ca MTA-STS Policy&hellip;</h1>
-    <p>
+    <h1>Fetching the guitard.ca MTA-STS policy&hellip;</h1>
+    <!-- role=status lets screen readers announce the handoff if the redirect is delayed;
+         it isn't a permitted role on headings, so it lives on the paragraph instead -->
+    <p role="status">
       If you are not redirected automatically,
-      <a href="https://mta-sts.guitard.ca/.well-known/mta-sts.txt" rel="noreferrer">View the MTA-STS policy</a>.
+      <a href="https://mta-sts.guitard.ca/.well-known/mta-sts.txt" rel="noreferrer">view the MTA-STS policy</a>.
+    </p>
+    <p class="fine">
+      <abbr title="Mail Transfer Agent Strict Transport Security">MTA-STS</abbr>
+      (<a href="https://www.rfc-editor.org/rfc/rfc8461" rel="noreferrer">RFC&nbsp;8461</a>)
+      tells sending mail servers to deliver mail for <strong>guitard.ca</strong> only over
+      authenticated TLS. The machine-readable policy lives at
+      <code>/.well-known/mta-sts.txt</code>; this page exists solely to point humans there.
     </p>
   </main>
 </body>
