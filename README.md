@@ -20,6 +20,18 @@ https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 
 ---
 
+## DNS Record
+
+The policy is activated by a DNS TXT record at `_mta-sts.guitard.ca`:
+
+```
+_mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
+```
+
+> ⚠️ **Important:** The `id=` value **must be updated** whenever the policy file changes. Receiving servers use this value to detect stale cached copies. If `id=` is unchanged, remote servers will not re-fetch the updated policy, regardless of `max_age`.
+
+---
+
 ## Current Policy
 
 ```
@@ -40,18 +52,6 @@ max_age: 2592000
 
 Mail for guitard.ca is routed through **Apple iCloud Mail** (Custom Domain).  
 The authorised MX hosts are operated by Apple Inc.
-
----
-
-## DNS Record
-
-The policy is activated by a DNS TXT record at `_mta-sts.guitard.ca`:
-
-```
-_mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
-```
-
-> ⚠️ **Important:** The `id=` value **must be updated** whenever the policy file changes. Receiving servers use this value to detect stale cached copies. If `id=` is unchanged, remote servers will not re-fetch the updated policy, regardless of `max_age`.
 
 ---
 
