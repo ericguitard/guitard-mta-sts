@@ -65,7 +65,7 @@ _mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260718080000Z;"
 
 ## Licence Notice
 
-All content in this repository — including configuration files, documentation, and related materials — is proprietary and remains the exclusive property of its respective rights holders.
+All content in this repository — including source code, configuration files, documentation, text, designs, images, names, logos, trademarks, branding, visual identity, and related materials — is proprietary and remains the exclusive property of its respective rights holders.
 
 Public access to this repository does not grant any licence or permission to copy, modify, reproduce, distribute, publish, sublicense, create derivative works from, or otherwise use its contents for any purpose, commercial or non-commercial.
 
