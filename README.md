@@ -30,7 +30,7 @@ mx: mx02.mail.icloud.com
 max_age: 2592000
 ```
 
-| Field     | Value                  | Notes                                           |
+| Key       | Value                  | Notes                                           |
 |-----------|------------------------|-------------------------------------------------|
 | `version` | `STSv1`                | Required literal                                |
 | `mode`    | `enforce`              | Sending servers must use TLS or reject delivery |
