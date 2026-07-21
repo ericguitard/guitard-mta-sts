@@ -6,7 +6,7 @@
 
 ## About
 
-This repository contains the MTA-STS email security policy used to operate and maintain [guitard.ca](https://guitard.ca) in accordance with [RFC 8461](https://datatracker.ietf.org/doc/html/rfc8461).
+This repository contains the MTA-STS email security policy used to operate and maintain [guitard.ca](https://guitard.ca) in accordance with [RFC 8461](https://www.rfc-editor.org/info/rfc8461/).
 
 MTA-STS (Mail Transfer Agent Strict Transport Security) is an email security standard that instructs sending mail servers to authenticate TLS certificates and enforce encrypted delivery to guitard.ca mail infrastructure.
 
