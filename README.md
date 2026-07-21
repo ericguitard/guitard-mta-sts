@@ -51,7 +51,7 @@ max_age: 2592000
 | `max_age` | `2592000`              | Policy cache duration — 30 days (seconds)       |
 
 Mail for guitard.ca is routed through **Apple iCloud Mail** (Custom Domain).  
-The authorised MX hosts are operated by Apple Inc.
+The authorized MX hosts are operated by Apple Inc.
 
 ---
 
