@@ -1,4 +1,4 @@
-# mta-sts.guitard.ca — MIME types and cache policy
+# MIME types and cache policy for mta-sts.guitard.ca
 
 # Public metadata and discovery files.
 /.well-known/mta-sts.txt
