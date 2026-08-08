@@ -1,0 +1,7 @@
+/.well-known/mta-sts.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: no-store
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
