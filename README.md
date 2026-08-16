@@ -54,40 +54,33 @@ to `security@guitard.ca`.
 ├── css/style.css                    # Custom 404 presentation
 ├── scripts/validate-policy.mjs      # RFC-oriented policy checks
 ├── .gitattributes                   # Stable policy line endings
+├── .gitignore                       # Files and directories to ignore
 ├── .htmlvalidate.json               # HTML validation rules
 ├── .nojekyll                        # Publish .well-known on GitHub Pages
 ├── 404.html                         # Branded missing-page response
 ├── CNAME                            # GitHub Pages custom domain
+├── README.md                        # GitHub primary user guide
+├── _headers                         # Desired headers; mirrored in Cloudflare
 ├── robots.txt                       # Excludes this service from crawling
-├── stylelint.config.mjs             # CSS validation rules
-└── _headers                         # Desired headers; mirrored in Cloudflare
+└── stylelint.config.mjs             # CSS validation rules
 ```
 
 ## Change Control
 
 The policy file is security-critical. Before changing it:
 
-1. Confirm the domain's live MX records and the TLS certificates presented by
-   every authorized exchanger.
-2. If an MX migration is planned, reduce `max_age` well in advance and wait for
-   the previous policy lifetime to expire.
+1. Confirm the domain's live MX records and the TLS certificates presented by every authorized exchanger.
+2. If an MX migration is planned, reduce `max_age` well in advance and wait for the previous policy lifetime to expire.
 3. Update `.well-known/mta-sts.txt` and deploy it first.
-4. Confirm the policy URL returns `200`, does not redirect, uses
-   `text/plain; charset=utf-8`, and presents a valid HTTPS certificate.
-5. Change the `_mta-sts.guitard.ca` TXT record to a new unique `id` only after
-   the policy is live.
+4. Confirm the policy URL returns `200`, does not redirect, uses `text/plain; charset=utf-8`, and presents a valid HTTPS certificate.
+5. Change the `_mta-sts.guitard.ca` TXT record to a new unique `id` only after the policy is live.
 6. Review TLS reports at `security@guitard.ca` after deployment.
 
-Changing the 404 page, CSS, robots file, documentation, or validation tooling
-does **not** require a new MTA-STS DNS `id` because those changes do not alter the
-policy.
+Changing the 404 page, CSS, robots file, documentation, or validation tooling does **not** require a new MTA-STS DNS `id` because those changes do not alter the policy.
 
 ## Cloudflare Configuration
 
-GitHub Pages serves the repository, while Cloudflare supplies redirects and
-response headers. GitHub Pages publishes `_headers` as an ordinary file; it
-does not interpret it as server configuration. Keep the Cloudflare rules in
-sync with the desired values documented there.
+GitHub Pages serves the repository, while Cloudflare supplies redirects and response headers. GitHub Pages publishes `_headers` as an ordinary file; it does not interpret it as server configuration. Keep the Cloudflare rules in sync with the desired values documented there.
 
 ### Root Redirect
 
@@ -105,8 +98,7 @@ Redirect with status `301` to:
 https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 ```
 
-Do not create a catch-all redirect. Unknown paths must retain their real `404`
-status.
+Do not create a catch-all redirect. Unknown paths must retain their real `404` status.
 
 ### Response Headers
 
@@ -117,38 +109,14 @@ lower(http.host) eq "mta-sts.guitard.ca"
 ```
 
 - Remove `Access-Control-Allow-Origin`.
-- Set `X-Robots-Tag: noindex, nofollow`.
 - Set `Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
+- Set `X-Robots-Tag: noindex, nofollow`.
 
 Keep the existing shared security-header rule that supplies
 `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`,
-`X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide
-protections. Do not set the same response header in both rules.
+`X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
 
-The policy endpoint does not require cross-origin browser access. MTA-STS
-clients fetch it directly over HTTPS.
-
-## Validation
-
-Install dependencies and run the complete local check:
-
-```powershell
-pnpm install --frozen-lockfile
-pnpm run check
-```
-
-The workflow checks formatting, HTML, CSS, JavaScript syntax, local resources,
-robots syntax, the custom-domain file, policy grammar, required fields, allowed
-MX patterns, policy size, and the maximum RFC cache lifetime.
-
-After deployment, also confirm the live endpoint and DNS:
-
-```powershell
-curl.exe -I "https://mta-sts.guitard.ca/.well-known/mta-sts.txt"
-curl.exe "https://mta-sts.guitard.ca/.well-known/mta-sts.txt"
-Resolve-DnsName "_mta-sts.guitard.ca" -Type TXT
-Resolve-DnsName "_smtp._tls.guitard.ca" -Type TXT
-```
+The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
 
 ## Licence Notice
 
