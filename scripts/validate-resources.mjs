@@ -81,19 +81,134 @@ if (cname !== "mta-sts.guitard.ca") {
   errors.push("CNAME must contain exactly mta-sts.guitard.ca.");
 }
 
-if (/Access-Control-Allow-Origin:/iu.test(headers)) {
-  errors.push("_headers must not enable cross-origin access.");
+const contentSecurityPolicy =
+  "default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+
+const expectedHeaderBlocks = new Map([
+  [
+    "/404.html",
+    {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "max-age=600",
+      "content-security-policy": contentSecurityPolicy,
+      "referrer-policy": "no-referrer",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-robots-tag": "noindex, nofollow",
+    },
+  ],
+  [
+    "/css/*.css",
+    {
+      "content-type": "text/css; charset=utf-8",
+      "cache-control": "max-age=14400",
+      "content-security-policy": contentSecurityPolicy,
+      "x-content-type-options": "nosniff",
+      "x-robots-tag": "noindex, nofollow",
+    },
+  ],
+  [
+    "/.well-known/mta-sts.txt",
+    {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "max-age=600",
+      "content-security-policy": contentSecurityPolicy,
+      "x-content-type-options": "nosniff",
+      "x-robots-tag": "noindex, nofollow",
+    },
+  ],
+  [
+    "/robots.txt",
+    {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "max-age=14400",
+      "content-security-policy": contentSecurityPolicy,
+      "x-content-type-options": "nosniff",
+      "x-robots-tag": "noindex, nofollow",
+    },
+  ],
+]);
+
+function parseHeaderBlocks(document) {
+  const blocks = new Map();
+  let currentPath;
+
+  for (const [index, line] of document.split(/\r?\n/u).entries()) {
+    const trimmed = line.trim();
+
+    if (trimmed === "" || trimmed.startsWith("#")) continue;
+
+    if (!/^\s/u.test(line)) {
+      currentPath = trimmed;
+      if (blocks.has(currentPath)) {
+        errors.push(`_headers contains a duplicate ${currentPath} section.`);
+      } else {
+        blocks.set(currentPath, new Map());
+      }
+      continue;
+    }
+
+    if (!currentPath) {
+      errors.push(`_headers line ${index + 1} has no path section.`);
+      continue;
+    }
+
+    const match = /^([A-Za-z0-9-]+):\s*(.+)$/u.exec(trimmed);
+    if (!match) {
+      errors.push(`_headers line ${index + 1} is not a valid header.`);
+      continue;
+    }
+
+    const name = match[1].toLowerCase();
+    const value = match[2];
+    const block = blocks.get(currentPath);
+
+    if (block.has(name)) {
+      errors.push(
+        `_headers ${currentPath} contains duplicate ${match[1]} headers.`,
+      );
+    } else {
+      block.set(name, value);
+    }
+  }
+
+  return blocks;
 }
 
-for (const requiredPath of [
-  "/.well-known/mta-sts.txt",
-  "/404.html",
-  "/css/*.css",
-  "/robots.txt",
-]) {
-  if (!headers.includes(requiredPath)) {
-    errors.push(`_headers is missing the ${requiredPath} section.`);
+const parsedHeaderBlocks = parseHeaderBlocks(headers);
+
+for (const pathName of parsedHeaderBlocks.keys()) {
+  if (!expectedHeaderBlocks.has(pathName)) {
+    errors.push(`_headers contains an unexpected ${pathName} section.`);
   }
+}
+
+for (const [pathName, expectedHeaders] of expectedHeaderBlocks) {
+  const actualHeaders = parsedHeaderBlocks.get(pathName);
+
+  if (!actualHeaders) {
+    errors.push(`_headers is missing the ${pathName} section.`);
+    continue;
+  }
+
+  for (const [name, expectedValue] of Object.entries(expectedHeaders)) {
+    const actualValue = actualHeaders.get(name);
+    if (actualValue !== expectedValue) {
+      errors.push(
+        `_headers ${pathName} must set ${name} to ${expectedValue}; found ${actualValue ?? "nothing"}.`,
+      );
+    }
+  }
+
+  for (const name of actualHeaders.keys()) {
+    if (!(name in expectedHeaders)) {
+      errors.push(`_headers ${pathName} contains unexpected header ${name}.`);
+    }
+  }
+}
+
+if (/Access-Control-Allow-Origin:/iu.test(headers)) {
+  errors.push("_headers must not enable cross-origin access.");
 }
 
 if (errors.length > 0) {
