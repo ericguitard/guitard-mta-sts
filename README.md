@@ -1,6 +1,6 @@
 # guitard.ca — MTA-STS Policy
 
-> ⚠️ **Proprietary content.** Public access does not grant a licence to copy, modify, redistribute, or republish this repository. See [Licence Notice](#licence-notice).
+> ⚠️ **Proprietary content.** See [Licence Notice](#licence-notice).
 
 ## About
 
