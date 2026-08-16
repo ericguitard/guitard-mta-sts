@@ -1,6 +1,6 @@
 # guitard.ca — MTA-STS Policy
 
-> ⚠️ **Proprietary content.** See [Licence Notice](#licence-notice).
+> ⚠️ **Proprietary content.** Public access does not grant any licence to use these materials. See [Licence Notice](#licence-notice).
 
 ## About
 
@@ -51,12 +51,15 @@ to `security@guitard.ca`.
 .
 ├── .github/
 │   └── workflows/
-│       └── validate.yml                # Automated validation
+│   │   └── validate.yml                # Automated validation
+│   │   └── validate-live.yml           # Scheduled production validation
+│   └── dependabot.yml                  # Dependency update checks
 ├── .well-known/
 │   └── mta-sts.txt                     # Protocol-critical policy
 ├── css/
 │   └── style.css                       # Custom 404 presentation
 ├── scripts/
+│   ├── validate-live.mjs               # HTTP and DNS production checks
 │   ├── validate-policy.mjs             # RFC-oriented policy checks
 │   └── validate-resources.mjs          # RFC-oriented resources checks
 ├── .gitattributes                      # Stable policy line endings
@@ -90,7 +93,7 @@ The `Content-Signal` line in `robots.txt` is a Cloudflare extension rather than 
 
 ## Cloudflare Configuration
 
-GitHub Pages serves the repository, while Cloudflare supplies redirects and response headers. GitHub Pages publishes `_headers` as an ordinary file; it does not interpret it as server configuration. Keep the Cloudflare rules in sync with the desired values documented there.
+GitHub Pages serves the repository, while Cloudflare supplies redirects and response headers. GitHub Pages publishes `_headers` as an ordinary file; it does not interpret it as server configuration. The file documents the intentional live values verified by the automated checks; keep Cloudflare aligned with it.
 
 ### Root Redirect
 
@@ -120,6 +123,7 @@ lower(http.host) eq "mta-sts.guitard.ca"
 
 - Remove `Access-Control-Allow-Origin`.
 - Set `Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
+- Remove `Speculation-Rules`.
 - Set `X-Robots-Tag: noindex, nofollow`.
 
 Keep the existing shared security-header rule that supplies
