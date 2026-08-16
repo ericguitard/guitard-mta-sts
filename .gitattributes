@@ -1,0 +1,16 @@
+* text=auto
+
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.mjs text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+/.gitattributes text eol=lf
+/.gitignore text eol=lf
+/_headers text eol=lf
+/CNAME text eol=lf
+
+# RFC 8461 permits LF or CRLF; retain the conventional CRLF policy format.
+/.well-known/mta-sts.txt text eol=crlf
