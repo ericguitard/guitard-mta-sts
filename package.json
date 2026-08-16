@@ -1,0 +1,21 @@
+{
+  "name": "guitard-mta-sts",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "scripts": {
+    "format": "prettier --write \"css/**/*.css\" \"scripts/**/*.mjs\" \"stylelint.config.mjs\" \".htmlvalidate.json\" \".github/**/*.yml\"",
+    "validate:format": "prettier --check --end-of-line auto \"css/**/*.css\" \"scripts/**/*.mjs\" \"stylelint.config.mjs\" \".htmlvalidate.json\" \".github/**/*.yml\"",
+    "validate:html": "html-validate 404.html",
+    "validate:css": "stylelint \"css/**/*.css\"",
+    "validate:js": "node --check stylelint.config.mjs && node --check scripts/validate-policy.mjs && node --check scripts/validate-resources.mjs",
+    "validate:policy": "node scripts/validate-policy.mjs",
+    "validate:resources": "node scripts/validate-resources.mjs",
+    "check": "pnpm run validate:format && pnpm run validate:html && pnpm run validate:css && pnpm run validate:js && pnpm run validate:policy && pnpm run validate:resources"
+  },
+  "devDependencies": {
+    "html-validate": "11.6.2",
+    "prettier": "3.9.6",
+    "stylelint": "17.14.1"
+  }
+}
