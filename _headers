@@ -1,10 +1,30 @@
 # MIME types and cache policy for mta-sts.guitard.ca
 
+# HTML uses stable URLs and must not be stored by browsers or shared caches.
+/404.html
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: public, max-age=300, must-revalidate
+  Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-Robots-Tag: noindex, nofollow
+
+# CSS and JavaScript are not fingerprinted, so keep their browser TTL short.
+/css/*.css
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
+  X-Content-Type-Options: nosniff
+
 # Public metadata and discovery files.
 /.well-known/mta-sts.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=600, s-maxage=3600, must-revalidate
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow
 
 /robots.txt
   Content-Type: text/plain; charset=utf-8
-  Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400
+  Cache-Control: public, max-age=3600, s-maxage=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow
