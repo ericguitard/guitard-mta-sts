@@ -40,18 +40,41 @@ if (!html.includes('href="/.well-known/mta-sts.txt"')) {
   errors.push("404.html must link to the published MTA-STS policy.");
 }
 
+const robotsDirectives = robots
+  .split(/\r?\n/u)
+  .map((line) => line.trim())
+  .filter((line) => line !== "" && !line.startsWith("#"));
+
 if (
-  !/^User-agent: \*\r?\nDisallow: \/\s*$/imu.test(
-    robots.replace(/^#.*\r?\n/gmu, "").trim(),
-  )
+  !robotsDirectives.some((line) => /^User-agent:\s*\*$/iu.test(line)) ||
+  !robotsDirectives.some((line) => /^Disallow:\s*\/$/iu.test(line))
 ) {
   errors.push(
     "robots.txt must contain the standard User-agent and Disallow rules.",
   );
 }
 
-if (/^Content-Signal:/imu.test(robots)) {
-  errors.push("robots.txt contains the non-standard Content-Signal directive.");
+const contentSignalLines = robotsDirectives.filter((line) =>
+  /^Content-Signal:/iu.test(line),
+);
+
+if (contentSignalLines.length !== 1) {
+  errors.push("robots.txt must contain exactly one Content-Signal directive.");
+} else {
+  const signalEntries = contentSignalLines[0]
+    .replace(/^Content-Signal:\s*/iu, "")
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase());
+  const expectedSignals = new Set(["search=no", "ai-input=no", "ai-train=no"]);
+
+  if (
+    signalEntries.length !== expectedSignals.size ||
+    signalEntries.some((entry) => !expectedSignals.has(entry))
+  ) {
+    errors.push(
+      "Content-Signal must set search=no, ai-input=no, and ai-train=no exactly once.",
+    );
+  }
 }
 
 if (cname !== "mta-sts.guitard.ca") {
