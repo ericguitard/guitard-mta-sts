@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mail Route Not Found — Guitard Inc.</title>
+  <title>Page Not Found — Guitard Inc.</title>
 
   <!--
     This shared error page represents many missing addresses, so it must not be
@@ -16,12 +16,36 @@
   <meta name="description" content="The requested address does not exist on the Guitard Inc. MTA-STS policy host.">
   <meta name="author" content="Guitard Inc.">
 
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Guitard Inc.">
+  <meta property="og:title" content="Page Not Found — Guitard Inc.">
+  <meta property="og:description" content="The requested address does not exist on the Guitard Inc. MTA-STS policy host.">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:image" content="https://assets.guitard.ca/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Guitard Inc. wordmark">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Page Not Found — Guitard Inc.">
+  <meta name="twitter:description" content="The requested address does not exist on the Guitard Inc. MTA-STS policy host.">
+  <meta name="twitter:image" content="https://assets.guitard.ca/og-image.png">
+  <meta name="twitter:image:alt" content="Guitard Inc. wordmark">
+
+  <!--
+    Content-Security-Policy is delivered by public/_headers. This static page
+    does not use the guitard.ca nonce Worker. Do not add a second CSP in a
+    meta element or add inline scripts or styles that conflict with the HTTP
+    policy.
+  -->
+
   <link rel="icon" href="https://assets.guitard.ca/favicon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="https://assets.guitard.ca/favicon.svg">
   <link rel="icon" type="image/png" sizes="96x96" href="https://assets.guitard.ca/favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="32x32" href="https://assets.guitard.ca/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="https://assets.guitard.ca/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="https://assets.guitard.ca/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Guitard Inc.">
 
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#e8f4f4" media="(prefers-color-scheme: light)">
@@ -29,6 +53,7 @@
 
   <link rel="stylesheet" href="/css/style.css?v=20260813-1">
 </head>
+
 <body>
   <div class="page-shell">
     <header class="site-identity">
@@ -53,12 +78,10 @@
         <p class="status-code" aria-hidden="true">404</p>
         <h1 id="error-title">Strict transport. Wrong address.</h1>
         <p class="error-message">
-          MTA-STS protects mail arriving at guitard.ca, but this web address is
-          not part of the published policy route.
+          MTA-STS protects mail arriving at guitard.ca, but this web address is not part of the published policy route.
         </p>
         <div class="actions">
-          <a class="action action-primary" href="/.well-known/mta-sts.txt">View MTA-STS policy</a>
-          <a class="action action-secondary" href="https://guitard.ca/">Visit guitard.ca</a>
+          <a class="action action-primary" href="/.well-known/mta-sts.txt">View MTA-STS Policy</a>
         </div>
       </section>
 
