@@ -120,7 +120,7 @@ The policy endpoint does not require cross-origin browser access. MTA-STS client
 
 ## Licence Notice
 
-All content in this repository—including source code, configuration files, documentation, text, designs, images, names, logos, trademarks, branding, visual identity, itinerary data, and related materials—is proprietary and remains the exclusive property of its respective rights holders.
+All content in this repository—including source code, configuration files, documentation, text, designs, images, names, logos, trademarks, branding, visual identity, and related materials—is proprietary and remains the exclusive property of its respective rights holders.
 
 Access to this repository or its deployed content does not grant any licence or permission to copy, modify, reproduce, distribute, publish, sublicence, create derivative works from, or otherwise use its contents for any commercial or non-commercial purpose.
 
