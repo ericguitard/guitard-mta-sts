@@ -1,3 +1,10 @@
+.action,
+.action:hover,
+.brand-link,
+.brand-link:hover strong {
+  text-decoration: none
+}
+
 :root {
   color-scheme: light dark;
   --accent: #087f82;
@@ -13,46 +20,47 @@
   --muted: #526a6c;
   --shadow: rgb(9 57 60 / 16%);
   font-family: system-ui, "Segoe UI", Arial, sans-serif;
-  font-synthesis: none;
+  font-synthesis: none
+}
+
+.diagnostic-result span,
+.route-heading span,
+.status-code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace
 }
 
 * {
-  box-sizing: border-box;
+  box-sizing: border-box
 }
 
 html {
   min-height: 100%;
-  background: var(--background);
+  background: var(--background)
+}
+
+.page-shell,
+body {
+  min-height: 100vh
 }
 
 body {
-  min-height: 100vh;
   min-height: 100svh;
   margin: 0;
-  background:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-    radial-gradient(circle at 12% 8%, rgb(8 127 130 / 18%), transparent 30rem),
-    var(--background);
-  background-size:
-    2rem 2rem,
-    2rem 2rem,
-    auto,
-    auto;
-  color: var(--foreground);
+  background: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px), radial-gradient(circle at 12% 8%, rgb(8 127 130 / 18%), transparent 30rem), var(--background);
+  background-size: 2rem 2rem, 2rem 2rem, auto, auto;
+  color: var(--foreground)
 }
 
 a {
-  color: inherit;
+  color: inherit
 }
 
 .page-shell {
   display: grid;
   width: min(100% - 3rem, 76rem);
-  min-height: 100vh;
   min-height: 100svh;
   margin: 0 auto;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr
 }
 
 .site-identity {
@@ -60,48 +68,56 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.5rem 0;
+  padding: 1.5rem 0
 }
 
 .brand-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
+  gap: .75rem
 }
 
-.brand-link > span {
+.brand-link>span {
   display: grid;
-  gap: 0.1rem;
+  gap: .1rem
 }
 
 .brand-link strong {
   font-size: 1rem;
-  letter-spacing: 0.015em;
+  letter-spacing: .015em
 }
 
 .brand-link small {
   color: var(--muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase
+}
+
+.delivery-label,
+.protocol-badge,
+.route-heading p {
+  margin: 0;
+  font-size: .7rem;
+  font-weight: 750;
+  color: var(--accent-strong)
 }
 
 .mail-mark {
   display: block;
   flex: 0 0 auto;
-  overflow: visible;
+  overflow: visible
 }
 
 .mail-mark-frame {
-  fill: var(--accent-strong);
+  fill: var(--accent-strong)
 }
 
 .mail-mark-envelope {
   fill: none;
   stroke: #ffffff;
   stroke-linejoin: round;
-  stroke-width: 2;
+  stroke-width: 2
 }
 
 .mail-mark-fold {
@@ -109,7 +125,7 @@ a {
   stroke: #ffffff;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 2;
+  stroke-width: 2
 }
 
 .mail-mark-lock {
@@ -117,19 +133,15 @@ a {
   stroke: var(--accent-strong);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.6;
+  stroke-width: 1.6
 }
 
 .protocol-badge {
-  margin: 0;
-  padding: 0.45rem 0.7rem;
+  padding: .45rem .7rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgb(255 255 255 / 65%);
-  color: var(--accent-strong);
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.12em;
+  letter-spacing: .12em
 }
 
 .error-layout {
@@ -140,39 +152,34 @@ a {
   border: 1px solid var(--border);
   border-radius: 1.5rem;
   background: var(--card);
-  box-shadow: 0 1.5rem 4rem var(--shadow);
+  box-shadow: 0 1.5rem 4rem var(--shadow)
 }
 
 .error-copy {
-  padding: clamp(2rem, 6vw, 5rem);
+  padding: clamp(2rem, 6vw, 5rem)
 }
 
 .delivery-label,
 .route-heading p {
-  margin: 0;
-  color: var(--accent-strong);
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: .14em;
+  text-transform: uppercase
 }
 
 .status-code {
   margin: clamp(1.5rem, 4vw, 3.5rem) 0 0;
   color: var(--accent);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
   font-size: clamp(5rem, 14vw, 10rem);
   font-weight: 760;
-  letter-spacing: -0.08em;
-  line-height: 0.78;
+  letter-spacing: -.08em;
+  line-height: .78
 }
 
 h1 {
   max-width: 11ch;
   margin: 1.5rem 0 0;
   font-size: clamp(2rem, 5vw, 3.75rem);
-  letter-spacing: -0.04em;
-  line-height: 1;
+  letter-spacing: -.04em;
+  line-height: 1
 }
 
 .error-message {
@@ -180,14 +187,14 @@ h1 {
   margin: 1.25rem 0 0;
   color: var(--muted);
   font-size: clamp(1rem, 2vw, 1.125rem);
-  line-height: 1.65;
+  line-height: 1.65
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 2rem;
+  gap: .75rem;
+  margin-top: 2rem
 }
 
 .action {
@@ -195,48 +202,41 @@ h1 {
   min-height: 2.9rem;
   align-items: center;
   justify-content: center;
-  padding: 0.65rem 1rem;
+  padding: .65rem 1rem;
   border: 1px solid var(--accent-strong);
-  border-radius: 0.55rem;
-  font-size: 0.8125rem;
+  border-radius: .55rem;
+  font-size: .8125rem;
   font-weight: 720;
-  letter-spacing: 0.035em;
-  text-decoration: none;
+  letter-spacing: .035em
 }
 
 .action-primary {
   background: var(--accent-strong);
-  color: #ffffff;
+  color: #fff
 }
 
 .action-primary:hover {
-  background: var(--foreground);
+  background: var(--foreground)
 }
 
-.brand-link:hover strong,
-.action:hover {
-  text-decoration: none;
-}
-
-.brand-link:focus-visible,
-.action:focus-visible {
-  outline: 3px solid #075dcc;
-  outline-offset: 3px;
+.action:focus-visible,
+.brand-link:focus-visible {
+  outline: #075dcc solid 3px;
+  outline-offset: 3px
 }
 
 .route-panel {
   align-self: stretch;
   padding: clamp(2rem, 5vw, 4rem);
   border-left: 1px solid var(--border);
-  background:
-    linear-gradient(145deg, rgb(8 127 130 / 7%), transparent 65%), #f4f9f9;
+  background: linear-gradient(145deg, rgb(8 127 130 / 7%), transparent 65%), #f4f9f9
 }
 
 .route-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1rem
 }
 
 .route-heading span {
@@ -247,15 +247,14 @@ h1 {
   border-radius: 50%;
   place-items: center;
   color: var(--accent-strong);
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  font-size: 0.65rem;
-  font-weight: 800;
+  font-size: .65rem;
+  font-weight: 800
 }
 
 h2 {
-  margin: 0.85rem 0 0;
+  margin: .85rem 0 0;
   font-size: clamp(1.3rem, 3vw, 1.75rem);
-  letter-spacing: -0.02em;
+  letter-spacing: -.02em
 }
 
 .route-list {
@@ -264,7 +263,7 @@ h2 {
   gap: 1.5rem;
   margin: 2rem 0;
   padding: 0;
-  list-style: none;
+  list-style: none
 }
 
 .route-list::before {
@@ -275,7 +274,7 @@ h2 {
   left: 1rem;
   width: 2px;
   background: var(--border);
-  content: "";
+  content: ""
 }
 
 .route-step {
@@ -284,22 +283,22 @@ h2 {
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr);
   align-items: center;
-  gap: 0.85rem;
+  gap: .85rem
 }
 
-.route-step > span:last-child {
+.route-step>span:last-child {
   display: grid;
-  gap: 0.25rem;
+  gap: .25rem
 }
 
 .route-step strong {
-  font-size: 0.95rem;
+  font-size: .95rem
 }
 
 .route-step small {
   color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: .8rem;
+  line-height: 1.4
 }
 
 .route-marker {
@@ -309,96 +308,87 @@ h2 {
   border: 2px solid var(--card);
   border-radius: 50%;
   place-items: center;
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 850;
+  color: #fff;
+  font-size: .85rem;
+  font-weight: 850
 }
 
 .route-complete .route-marker {
-  background: var(--accent-strong);
+  background: var(--accent-strong)
 }
 
 .route-failed .route-marker {
-  background: var(--danger);
+  background: var(--danger)
 }
 
 .route-failed strong {
-  color: var(--danger);
+  color: var(--danger)
 }
 
 .diagnostic-result {
   display: grid;
-  gap: 0.35rem;
+  gap: .35rem;
   margin: 0;
   padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
-  border-radius: 0.65rem;
-  background: var(--danger-soft);
+  border-radius: .65rem;
+  background: var(--danger-soft)
 }
 
 .diagnostic-result strong {
   color: var(--danger);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: .65rem;
+  letter-spacing: .12em;
+  text-transform: uppercase
 }
 
 .diagnostic-result span {
-  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
-  font-size: 0.78rem;
-  line-height: 1.5;
+  font-size: .78rem;
+  line-height: 1.5
 }
 
-@media (max-width: 48rem) {
+@media (max-width:48rem) {
   .page-shell {
-    width: min(100% - 2rem, 42rem);
+    width: min(100% - 2rem, 42rem)
   }
-
   .error-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr
   }
-
   .route-panel {
     border-top: 1px solid var(--border);
-    border-left: 0;
+    border-left: 0
   }
 }
 
-@media (max-width: 30rem) {
+@media (max-width:30rem) {
   .page-shell {
-    width: min(100% - 1.25rem, 42rem);
+    width: min(100% - 1.25rem, 42rem)
   }
-
   .site-identity {
-    align-items: flex-start;
+    align-items: flex-start
   }
-
   .brand-link small {
-    letter-spacing: 0.04em;
+    letter-spacing: .04em
   }
-
   .protocol-badge {
     max-width: 7rem;
-    border-radius: 0.5rem;
+    border-radius: .5rem;
     line-height: 1.4;
-    text-align: center;
+    text-align: center
   }
-
   .error-copy,
   .route-panel {
-    padding: 1.5rem;
+    padding: 1.5rem
   }
-
   .actions {
-    display: grid;
+    display: grid
   }
-
   .action {
-    width: 100%;
+    width: 100%
   }
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme:dark) {
   :root {
     --accent: #69c9ca;
     --accent-strong: #8cdddd;
@@ -411,50 +401,39 @@ h2 {
     --foreground: #effafa;
     --grid-line: rgb(103 200 201 / 7%);
     --muted: #adcbcc;
-    --shadow: rgb(0 0 0 / 38%);
+    --shadow: rgb(0 0 0 / 38%)
   }
-
   .protocol-badge {
-    background: rgb(7 23 25 / 65%);
+    background: rgb(7 23 25 / 65%)
   }
-
   .mail-mark-frame {
-    fill: #116568;
+    fill: #116568
   }
-
   .action-primary {
     background: #116568;
+    border-color: #8cdddd
   }
-
   .mail-mark-lock {
-    stroke: #116568;
+    stroke: #116568
   }
-
-  .action-primary {
-    border-color: #8cdddd;
-  }
-
   .action-primary:hover {
-    background: #174f52;
+    background: #174f52
   }
-
   .route-panel {
-    background:
-      linear-gradient(145deg, rgb(105 201 202 / 7%), transparent 65%), #0a1e20;
+    background: linear-gradient(145deg, rgb(105 201 202 / 7%), transparent 65%), #0a1e20
   }
 }
 
-@media (forced-colors: active) {
-  .protocol-badge,
-  .error-layout,
+@media (forced-colors:active) {
   .action,
-  .route-panel,
+  .diagnostic-result,
+  .error-layout,
+  .protocol-badge,
   .route-marker,
-  .diagnostic-result {
-    border: 2px solid CanvasText;
+  .route-panel {
+    border: 2px solid CanvasText
   }
-
   .route-list::before {
-    background: CanvasText;
+    background: CanvasText
   }
 }
