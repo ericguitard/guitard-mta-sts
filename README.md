@@ -1,26 +1,18 @@
 # guitard.ca — MTA-STS Policy
 
-> **Proprietary content.** Public access does not grant a licence to copy,
-> modify, redistribute, or republish this repository. See
-> [Licence notice](#licence-notice).
+> ⚠️ **Proprietary content.** Public access does not grant a licence to copy, modify, redistribute, or republish this repository. See [Licence notice](#licence-notice).
 
 ## About
 
-This repository publishes the SMTP MTA Strict Transport Security policy for
-[guitard.ca](https://guitard.ca/) at the endpoint required by
-[RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
+This repository publishes the SMTP MTA Strict Transport Security policy for [guitard.ca](https://guitard.ca/) at the endpoint required by [RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
 
 ```text
 https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 ```
 
-MTA-STS tells participating sending mail servers to authenticate the TLS
-certificate presented by an authorized guitard.ca mail exchanger and to reject
-delivery when a secure, authenticated connection cannot be established.
+MTA-STS tells participating sending mail servers to authenticate the TLS certificate presented by an authorized guitard.ca mail exchanger and to reject delivery when a secure, authenticated connection cannot be established.
 
-The subdomain is a protocol endpoint rather than a general website. Its root
-address redirects to the published policy for human convenience; every other
-unknown path returns the custom 404 page.
+The subdomain is a protocol endpoint rather than a general website. Its root address redirects to the published policy for human convenience; every other unknown path returns the custom 404 page.
 
 ## Current production configuration
 
