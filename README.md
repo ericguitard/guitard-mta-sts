@@ -1,6 +1,6 @@
 # guitard.ca — MTA-STS Policy
 
-> ⚠️ **Proprietary content.** Public access does not grant a licence to copy, modify, redistribute, or republish this repository. See [Licence notice](#licence-notice).
+> ⚠️ **Proprietary content.** Public access does not grant a licence to copy, modify, redistribute, or republish this repository. See [Licence Notice](#licence-notice).
 
 ## About
 
@@ -45,7 +45,7 @@ The TLS reporting record follows
 [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports
 to `security@guitard.ca`.
 
-## Repository structure
+## Repository Structure
 
 ```text
 .
@@ -63,7 +63,7 @@ to `security@guitard.ca`.
 └── _headers                         # Desired headers; mirrored in Cloudflare
 ```
 
-## Change control
+## Change Control
 
 The policy file is security-critical. Before changing it:
 
@@ -82,14 +82,14 @@ Changing the 404 page, CSS, robots file, documentation, or validation tooling
 does **not** require a new MTA-STS DNS `id` because those changes do not alter the
 policy.
 
-## Cloudflare configuration
+## Cloudflare Configuration
 
 GitHub Pages serves the repository, while Cloudflare supplies redirects and
 response headers. GitHub Pages publishes `_headers` as an ordinary file; it
 does not interpret it as server configuration. Keep the Cloudflare rules in
 sync with the desired values documented there.
 
-### Root redirect
+### Root Redirect
 
 Match only the root path so the policy and custom 404 remain reachable:
 
@@ -108,7 +108,7 @@ https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 Do not create a catch-all redirect. Unknown paths must retain their real `404`
 status.
 
-### Response headers
+### Response Headers
 
 Use one MTA-STS-specific response-header rule:
 
