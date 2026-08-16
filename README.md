@@ -51,8 +51,8 @@ to `security@guitard.ca`.
 .
 ├── .github/
 │   └── workflows/
+│   │   ├── validate-live.yml           # Scheduled production validation
 │   │   └── validate.yml                # Automated validation
-│   │   └── validate-live.yml           # Scheduled production validation
 │   └── dependabot.yml                  # Dependency update checks
 ├── .well-known/
 │   └── mta-sts.txt                     # Protocol-critical policy
