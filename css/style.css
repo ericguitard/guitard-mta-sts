@@ -213,15 +213,6 @@ h1 {
   background: var(--foreground);
 }
 
-.action-secondary {
-  background: transparent;
-  color: var(--accent-strong);
-}
-
-.action-secondary:hover {
-  background: var(--accent-soft);
-}
-
 .brand-link:hover strong,
 .action:hover {
   text-decoration: none;
