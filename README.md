@@ -50,27 +50,27 @@ to `security@guitard.ca`.
 ```text
 .
 ├── .github/
-    ├── workflows/
-        └── validate.yml     # Automated validation
+│   └── workflows/
+│       └── validate.yml                # Automated validation
 ├── .well-known/
-    └── mta-sts.txt              # Protocol-critical policy
+│   └── mta-sts.txt                     # Protocol-critical policy
 ├── css/
-    └── style.css              # Custom 404 presentation
+│   └── style.css                       # Custom 404 presentation
 ├── scripts/
-    ├── validate-policy.mjs              # RFC-oriented policy checks
-    └── validate-resources.mjs           # RFC-oriented resources checks
-├── .gitattributes                     # Stable policy line endings
-├── .gitignore                         # Files and directories to ignore
-├── .htmlvalidate.json                 # HTML validation rules
-├── .nojekyll                          # Publish .well-known on GitHub Pages
-├── 404.html                           # Branded missing-page response
-├── CNAME                              # GitHub Pages custom domain
-├── README.md                          # GitHub primary user guide
-├── _headers                           # Desired headers; mirrored in Cloudflare
-├── package.json                       # Central manifest and configuration file
-├── pnpm-lock.yaml                     # Lock file used by the pnpm package manager
-├── robots.txt                         # Excludes this service from crawling
-└── stylelint.config.mjs               # CSS validation rules
+│   ├── validate-policy.mjs             # RFC-oriented policy checks
+│   └── validate-resources.mjs          # RFC-oriented resources checks
+├── .gitattributes                      # Stable policy line endings
+├── .gitignore                          # Files and directories to ignore
+├── .htmlvalidate.json                  # HTML validation rules
+├── .nojekyll                           # Publish .well-known on GitHub Pages
+├── 404.html                            # Branded missing-page response
+├── CNAME                               # GitHub Pages custom domain
+├── README.md                           # GitHub primary user guide
+├── _headers                            # Desired headers; mirrored in Cloudflare
+├── package.json                        # Central manifest and configuration file
+├── pnpm-lock.yaml                      # Lock file used by the pnpm package manager
+├── robots.txt                          # Excludes this service from crawling
+└── stylelint.config.mjs                # CSS validation rules
 ```
 
 ## Change Control
