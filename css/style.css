@@ -52,7 +52,7 @@ a {
   min-height: 100vh;
   min-height: 100svh;
   margin: 0 auto;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 }
 
 .site-identity {
@@ -347,17 +347,6 @@ h2 {
   font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
   font-size: 0.78rem;
   line-height: 1.5;
-}
-
-footer {
-  padding: 1.5rem 0;
-  color: var(--muted);
-  font-size: 0.75rem;
-  text-align: center;
-}
-
-footer p {
-  margin: 0;
 }
 
 @media (max-width: 48rem) {
