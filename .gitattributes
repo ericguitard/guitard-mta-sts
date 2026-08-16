@@ -9,8 +9,8 @@
 *.yml text eol=lf
 /.gitattributes text eol=lf
 /.gitignore text eol=lf
-/_headers text eol=lf
 /CNAME text eol=lf
+/_headers text eol=lf
 
 # Preserve the policy's committed CRLF bytes without Git normalization.
 /.well-known/mta-sts.txt -text -eol
