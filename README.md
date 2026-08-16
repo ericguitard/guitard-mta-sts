@@ -30,8 +30,8 @@ max_age: 31557600
 | --- | --- | --- |
 | `version` | `STSv1` | Required policy version |
 | `mode` | `enforce` | Reject delivery when policy validation fails |
-| `mx` | `mx01.mail.icloud.com` | Authorized iCloud Mail exchanger |
-| `mx` | `mx02.mail.icloud.com` | Authorized iCloud Mail exchanger |
+| `mx` | `mx01.mail.icloud.com` | Primary iCloud Mail exchanger |
+| `mx` | `mx02.mail.icloud.com` | Secondary iCloud Mail exchanger |
 | `max_age` | `31557600` | RFC maximum cache lifetime in seconds |
 
 ### DNS
