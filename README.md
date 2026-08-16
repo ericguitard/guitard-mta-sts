@@ -61,6 +61,8 @@ to `security@guitard.ca`.
 ├── CNAME                            # GitHub Pages custom domain
 ├── README.md                        # GitHub primary user guide
 ├── _headers                         # Desired headers; mirrored in Cloudflare
+├── package.json                     # Central manifest and configuration file
+├── pnpm-lock.yaml                   # Lock file used by the pnpm package manager
 ├── robots.txt                       # Excludes this service from crawling
 └── stylelint.config.mjs             # CSS validation rules
 ```
