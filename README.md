@@ -49,11 +49,16 @@ to `security@guitard.ca`.
 
 ```text
 .
-├── .github/workflows/validate.yml     # Automated validation
-├── .well-known/mta-sts.txt            # Protocol-critical policy
-├── css/style.css                      # Custom 404 presentation
-├── scripts/validate-policy.mjs        # RFC-oriented policy checks
-├── scripts/validate-resources.mjs     # RFC-oriented resources checks
+├── .github/
+    ├── workflows/
+        └── validate.yml     # Automated validation
+├── .well-known/
+    └── mta-sts.txt              # Protocol-critical policy
+├── css/
+    └── style.css              # Custom 404 presentation
+├── scripts/
+    ├── validate-policy.mjs              # RFC-oriented policy checks
+    └── validate-resources.mjs           # RFC-oriented resources checks
 ├── .gitattributes                     # Stable policy line endings
 ├── .gitignore                         # Files and directories to ignore
 ├── .htmlvalidate.json                 # HTML validation rules
