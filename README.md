@@ -122,7 +122,7 @@ lower(http.host) eq "mta-sts.guitard.ca"
 ```
 
 - Remove `Access-Control-Allow-Origin`.
-- Set `Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
+- Set `Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
 - Remove `Speculation-Rules`.
 - Set `X-Robots-Tag: noindex, nofollow`.
 
@@ -131,6 +131,8 @@ Keep the existing shared security-header rule that supplies
 `X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
 
 The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
+
+The `script-src` and `connect-src` allowances are limited to Cloudflare's automatically injected Web Analytics beacon. Automatic injection reports to the same hostname at `/cdn-cgi/rum`; inline scripts and event-handler attributes remain blocked.
 
 ## Licence Notice
 
