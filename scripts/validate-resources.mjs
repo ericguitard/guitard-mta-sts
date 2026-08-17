@@ -82,7 +82,7 @@ if (cname !== "mta-sts.guitard.ca") {
 }
 
 const contentSecurityPolicy =
-  "default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 const expectedHeaderBlocks = new Map([
   [

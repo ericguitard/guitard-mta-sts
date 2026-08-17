@@ -10,7 +10,7 @@ const repositoryRoot = path.resolve(
 const origin = "https://mta-sts.guitard.ca";
 const policyPath = "/.well-known/mta-sts.txt";
 const contentSecurityPolicy =
-  "default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const expectedMtaStsRecord = "v=STSv1; id=20260812050000Z;";
 const expectedTlsReportRecord = "v=TLSRPTv1; rua=mailto:security@guitard.ca";
 const errors = [];
