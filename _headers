@@ -4,7 +4,7 @@
 /404.html
   Content-Type: text/html; charset=utf-8
   Cache-Control: max-age=600
-  Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -14,7 +14,7 @@
 /css/*.css
   Content-Type: text/css; charset=utf-8
   Cache-Control: max-age=14400
-  Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex, nofollow
 
@@ -22,7 +22,7 @@
 /.well-known/mta-sts.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: max-age=600
-  Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex, nofollow
 
@@ -30,6 +30,6 @@
 /robots.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: max-age=14400
-  Content-Security-Policy: default-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex, nofollow
