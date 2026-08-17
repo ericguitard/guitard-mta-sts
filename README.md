@@ -45,37 +45,6 @@ The TLS reporting record follows
 [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports
 to `security@guitard.ca`.
 
-## Repository Structure
-
-```text
-.
-├── .github/
-│   └── workflows/
-│   │   ├── validate-live.yml           # Scheduled production validation
-│   │   └── validate.yml                # Automated validation
-│   └── dependabot.yml                  # Dependency update checks
-├── .well-known/
-│   └── mta-sts.txt                     # Protocol-critical policy
-├── css/
-│   └── style.css                       # Custom 404 presentation
-├── scripts/
-│   ├── validate-live.mjs               # HTTP and DNS production checks
-│   ├── validate-policy.mjs             # RFC-oriented policy checks
-│   └── validate-resources.mjs          # RFC-oriented resources checks
-├── .gitattributes                      # Stable policy line endings
-├── .gitignore                          # Files and directories to ignore
-├── .htmlvalidate.json                  # HTML validation rules
-├── .nojekyll                           # Publish .well-known on GitHub Pages
-├── 404.html                            # Branded missing-page response
-├── CNAME                               # GitHub Pages custom domain
-├── README.md                           # GitHub primary user guide
-├── _headers                            # Desired headers; mirrored in Cloudflare
-├── package.json                        # Central manifest and configuration file
-├── pnpm-lock.yaml                      # Lock file used by the pnpm package manager
-├── robots.txt                          # Excludes this service from crawling
-└── stylelint.config.mjs                # CSS validation rules
-```
-
 ## Change Control
 
 The policy file is security-critical. Before changing it:
