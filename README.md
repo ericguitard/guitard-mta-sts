@@ -58,8 +58,6 @@ The policy file is security-critical. Before changing it:
 
 Changing the 404 page, CSS, robots file, documentation, or validation tooling does **not** require a new MTA-STS DNS `id` because those changes do not alter the policy.
 
-The `Content-Signal` line in `robots.txt` is a Cloudflare extension rather than an RFC 9309 directive. Supporting crawlers can use it to interpret the site's search, AI-input, and AI-training preferences; other crawlers may ignore it without affecting the standard `User-agent` and `Disallow` rules.
-
 ## Cloudflare Configuration
 
 GitHub Pages serves the repository, while Cloudflare supplies redirects and response headers. GitHub Pages publishes `_headers` as an ordinary file; it does not interpret it as server configuration. The file documents the intentional live values verified by the automated checks; keep Cloudflare aligned with it.
