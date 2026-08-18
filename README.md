@@ -1,20 +1,28 @@
 # guitard.ca — MTA-STS Policy
 
-> ⚠️ **Proprietary content.** Public access does not grant any licence to use these materials. See [Licence Notice](#licence-notice).
+---
 
 ## About
 
-This repository publishes the SMTP MTA Strict Transport Security policy for [guitard.ca](https://guitard.ca/) at the endpoint required by [RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
+This repository publishes the SMTP MTA Strict Transport Security policy for
+[guitard.ca](https://guitard.ca/) at the endpoint required by
+[RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
 
 ```text
 https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 ```
 
-MTA-STS tells participating sending mail servers to authenticate the TLS certificate presented by an authorized guitard.ca mail exchanger and to reject delivery when a secure, authenticated connection cannot be established.
+MTA-STS tells participating sending mail servers to authenticate the TLS
+certificate presented by an authorized `guitard.ca` mail exchanger and to
+reject delivery when a secure, authenticated connection cannot be established.
 
-The subdomain is a protocol endpoint rather than a general website. Its root address redirects to the published policy for human convenience; every other unknown path returns the custom 404 page.
+The subdomain is a protocol endpoint rather than a general website. Its root
+redirects to the published policy for human convenience, while every other
+unknown path returns the custom `404` page.
 
-## Current production configuration
+---
+
+## Current Production Configuration
 
 ### Policy
 
@@ -37,7 +45,7 @@ max_age: 31557600
 ### DNS
 
 ```text
-_mta-sts.guitard.ca.  TXT  "v=STSv1; id=20260812050000Z;"
+_mta-sts.guitard.ca.   TXT "v=STSv1; id=20260812050000Z;"
 _smtp._tls.guitard.ca. TXT "v=TLSRPTv1; rua=mailto:security@guitard.ca"
 ```
 
@@ -45,97 +53,21 @@ The TLS reporting record follows
 [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports
 to `security@guitard.ca`.
 
-## Change Control
+---
 
-The policy file is security-critical. Before changing it:
+## Contents
 
-1. Confirm the domain's live MX records and the TLS certificates presented by every authorized exchanger.
-2. If an MX migration is planned, reduce `max_age` well in advance and wait for the previous policy lifetime to expire.
-3. Update `.well-known/mta-sts.txt` and deploy it first.
-4. Confirm the policy URL returns `200`, does not redirect, uses `text/plain; charset=utf-8`, and presents a valid HTTPS certificate.
-5. Change the `_mta-sts.guitard.ca` TXT record to a new unique `id` only after the policy is live.
-6. Review TLS reports at `security@guitard.ca` after deployment.
+- Published MTA-STS policy and custom-domain configuration
+- Custom protocol-endpoint `404` page and stylesheet
+- Documented Cloudflare response headers
+- Local policy, resource, dependency, and production validation
+- Pull-request validation and scheduled live-service monitoring
+- Dependabot configuration for npm and GitHub Actions
 
-Changing the 404 page, CSS, robots file, documentation, or validation tooling does **not** require a new MTA-STS DNS `id` because those changes do not alter the policy.
+---
 
-## Cloudflare Configuration
+## Authoritative Documentation
 
-GitHub Pages serves the repository, while Cloudflare supplies redirects and response headers. GitHub Pages publishes `_headers` as an ordinary file; it does not interpret it as server configuration. The file documents the intentional live values verified by the automated checks; keep Cloudflare aligned with it.
-
-### Root Redirect
-
-Match only the root path so the policy and custom 404 remain reachable:
-
-```text
-lower(http.host) eq "mta-sts.guitard.ca"
-and http.request.method in {"GET" "HEAD"}
-and http.request.uri.path eq "/"
-```
-
-Redirect with status `301` to:
-
-```text
-https://mta-sts.guitard.ca/.well-known/mta-sts.txt
-```
-
-Do not create a catch-all redirect. Unknown paths must retain their real `404` status.
-
-### Response Headers
-
-Use one MTA-STS-specific response-header rule:
-
-```text
-lower(http.host) eq "mta-sts.guitard.ca"
-```
-
-- Remove `Access-Control-Allow-Origin`.
-- Set `Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
-- Remove `Speculation-Rules`.
-- Set `X-Robots-Tag: noindex, nofollow`.
-
-Use a second, policy-specific response-header rule:
-
-```text
-lower(http.host) eq "mta-sts.guitard.ca"
-and http.request.method in {"GET" "HEAD"}
-and http.request.uri.path eq "/.well-known/mta-sts.txt"
-and http.response.code eq 200
-```
-
-Set `Cache-Control: no-store`. MTA-STS clients use the policy's `max_age`
-field for protocol caching and must not use HTTP caching when retrieving an
-updated policy.
-
-Keep the existing shared security-header rule that supplies
-`Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`,
-`X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
-
-### Automated Client Access
-
-MTA-STS is fetched by automated mail servers rather than web browsers. Use a
-Cloudflare Configuration Rule matching this hostname:
-
-```text
-lower(http.host) eq "mta-sts.guitard.ca"
-```
-
-Disable Browser Integrity Check for the matching requests so non-browser user
-agents cannot be challenged at the policy endpoint.
-
-The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
-
-The `script-src` and `connect-src` allowances are limited to Cloudflare's automatically injected Web Analytics beacon. Automatic injection reports to the same hostname at `/cdn-cgi/rum`; inline scripts and event-handler attributes remain blocked.
-
-## Licence Notice
-
-All content in this repository—including source code, configuration files, documentation, text, designs, images, names, logos, trademarks, branding, visual identity, and related materials—is proprietary and remains the exclusive property of its respective rights holders.
-
-Access to this repository or its deployed content does not grant any licence or permission to copy, modify, reproduce, distribute, publish, sublicence, create derivative works from, or otherwise use its contents for any commercial or non-commercial purpose.
-
-Any third-party use requires prior written authorization from the applicable rights holder.
-
-**All rights reserved.**
-
-## Permissions
-
-To request authorization to use an asset or other repository content, contact Eric Guitard at [eric@guitard.ca](mailto:eric@guitard.ca).
+- [Deployment, change control, and validation](DEPLOYMENT.md)
+- [Security policy](SECURITY.md)
+- [Rights, licence, and permissions](RIGHTS.md)
