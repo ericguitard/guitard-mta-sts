@@ -68,6 +68,6 @@ to `security@guitard.ca`.
 
 ## Authoritative Documentation
 
-- [Deployment, change control, and validation](DEPLOYMENT.md)
-- [Security policy](SECURITY.md)
-- [Rights, licence, and permissions](RIGHTS.md)
+- [Validation, Deployment, and Repository Configuration](DEPLOYMENT.md)
+- [Security Policy](SECURITY.md)
+- [Rights, Licence, and Permissions](RIGHTS.md)

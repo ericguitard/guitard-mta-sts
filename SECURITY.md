@@ -5,7 +5,7 @@ applies to this repository and `mta-sts.guitard.ca`.
 
 Use the reporting process and contact information in that policy for suspected
 vulnerabilities and coordinated disclosure. Do not publish sensitive security
-reports in a public GitHub issue.
+reports in a GitHub issue.
 
 The MTA-STS policy affects inbound email transport security. Report unexpected
 policy content, DNS identifiers, redirects, TLS failures, Cloudflare challenges,
