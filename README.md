@@ -93,9 +93,34 @@ lower(http.host) eq "mta-sts.guitard.ca"
 - Remove `Speculation-Rules`.
 - Set `X-Robots-Tag: noindex, nofollow`.
 
+Use a second, policy-specific response-header rule:
+
+```text
+lower(http.host) eq "mta-sts.guitard.ca"
+and http.request.method in {"GET" "HEAD"}
+and http.request.uri.path eq "/.well-known/mta-sts.txt"
+and http.response.code eq 200
+```
+
+Set `Cache-Control: no-store`. MTA-STS clients use the policy's `max_age`
+field for protocol caching and must not use HTTP caching when retrieving an
+updated policy.
+
 Keep the existing shared security-header rule that supplies
 `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`,
 `X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
+
+### Automated Client Access
+
+MTA-STS is fetched by automated mail servers rather than web browsers. Use a
+Cloudflare Configuration Rule matching this hostname:
+
+```text
+lower(http.host) eq "mta-sts.guitard.ca"
+```
+
+Disable Browser Integrity Check for the matching requests so non-browser user
+agents cannot be challenged at the policy endpoint.
 
 The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
 
