@@ -111,7 +111,7 @@ const expectedHeaderBlocks = new Map([
     "/.well-known/mta-sts.txt",
     {
       "content-type": "text/plain; charset=utf-8",
-      "cache-control": "max-age=600",
+      "cache-control": "no-store",
       "content-security-policy": contentSecurityPolicy,
       "x-content-type-options": "nosniff",
       "x-robots-tag": "noindex, nofollow",

@@ -21,7 +21,7 @@
 # MTA-STS clients fetch this protocol-critical policy directly over HTTPS.
 /.well-known/mta-sts.txt
   Content-Type: text/plain; charset=utf-8
-  Cache-Control: max-age=600
+  Cache-Control: no-store
   Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex, nofollow

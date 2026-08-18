@@ -26,7 +26,10 @@ function recordError(message) {
   errors.push(message);
 }
 
-async function fetchLive(pathName) {
+async function fetchLive(
+  pathName,
+  userAgent = "guitard-mta-sts-live-validator/1.0",
+) {
   const url = new URL(pathName, origin);
 
   try {
@@ -34,7 +37,7 @@ async function fetchLive(pathName) {
       redirect: "manual",
       headers: {
         accept: "*/*",
-        "user-agent": "guitard-mta-sts-live-validator/1.0",
+        "user-agent": userAgent,
       },
       signal: AbortSignal.timeout(15_000),
     });
@@ -97,7 +100,7 @@ if (policyResponse) {
   validateStatus(policyResponse, policyPath, 200);
   validateHeaders(policyResponse, policyPath, {
     "content-type": "text/plain; charset=utf-8",
-    "cache-control": "max-age=600",
+    "cache-control": "no-store",
     "content-security-policy": contentSecurityPolicy,
     "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
     "x-content-type-options": "nosniff",
@@ -107,6 +110,17 @@ if (policyResponse) {
     recordError(`${policyPath} must not redirect.`);
   }
   await validateExactBody(policyResponse, policyPath, localPolicy);
+}
+
+for (const [label, userAgent] of [
+  ["empty user agent", ""],
+  ["Postfix user agent", "Postfix"],
+]) {
+  const automatedClientResponse = await fetchLive(policyPath, userAgent);
+  if (automatedClientResponse) {
+    validateStatus(automatedClientResponse, label, 200);
+    await validateExactBody(automatedClientResponse, label, localPolicy);
+  }
 }
 
 const robotsResponse = await fetchLive("/robots.txt");
