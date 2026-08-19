@@ -64,9 +64,11 @@ Under **Settings → Actions → General**:
 2. Set the default workflow permission to read repository contents and packages.
 3. Leave permission for GitHub Actions to create and approve pull requests disabled unless separate automation requires it.
 
-## 5. Configure Cloudflare DNS and TLS
+## 5. Configure Cloudflare delivery rules
 
-Confirm these settings:
+### DNS and TLS
+
+Confirm the following existing settings:
 
 1. `mta-sts` is a proxied CNAME to `ericguitard.github.io`.
 2. SSL/TLS mode is **Full (strict)**.
@@ -74,8 +76,6 @@ Confirm these settings:
 4. HSTS sends at least `max-age=31536000; includeSubDomains; preload`.
 5. `_mta-sts.guitard.ca` publishes the current MTA-STS policy identifier.
 6. `_smtp._tls.guitard.ca` publishes the TLS reporting record.
-
-## 6. Configure Cloudflare delivery rules
 
 ### Redirect Rules
 
@@ -131,7 +131,7 @@ Set `Cache-Control: no-store`. MTA-STS clients use the policy's `max_age` field 
 
 The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
 
-## 7. Preserve automated-client access
+## 6. Preserve automated-client access
 
 MTA-STS is fetched by automated mail servers rather than web browsers. Keep the Cloudflare Configuration Rule named **Automated Client Access**, matching:
 
@@ -141,7 +141,7 @@ lower(http.host) eq "mta-sts.guitard.ca"
 
 Disable Browser Integrity Check for matching requests so empty and non-browser user agents cannot be challenged. Browser Integrity Check remains enabled for the rest of the zone.
 
-## 8. Configure repository security and automation
+## 7. Configure repository security and automation
 
 Under **Settings → Code security and analysis**:
 
@@ -160,7 +160,7 @@ Under repository **General** settings, use:
 
 Issues may remain disabled because `SECURITY.md` provides a private reporting channel.
 
-## 9. Merge and verify a deployment
+## 8. Merge and verify a deployment
 
 1. Merge the pull request only after `Validate / validate` succeeds.
 2. Confirm the GitHub Pages build and deployment completes successfully.
@@ -170,7 +170,7 @@ Issues may remain disabled because `SECURITY.md` provides a private reporting ch
 
 The scheduled live monitor runs daily at 10:23 UTC. GitHub may delay scheduled workflows during periods of high load, so the manual post-deployment check remains the primary release verification.
 
-## 10. Rollback
+## 9. Rollback
 
 If a deployment or policy change fails:
 
