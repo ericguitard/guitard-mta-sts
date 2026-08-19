@@ -2,4 +2,6 @@
 
 The official Guitard Inc. [Security Policy](https://guitard.ca/security-policy/) applies to this repository and `mta-sts.guitard.ca`.
 
-Use the reporting process and contact information in that policy for suspected vulnerabilities and coordinated disclosure. Do not publish sensitive security reports in a GitHub issue.
+For suspected vulnerabilities or coordinated disclosure, use the reporting process and contact information provided in that policy. Do not file sensitive security reports as public GitHub issues.
+
+Since the MTA-STS policy governs inbound email transport security, report any of the following through the same private channel: unexpected policy content, unfamiliar DNS identifiers, redirects, TLS handshake failures, Cloudflare challenges, or an unavailable policy response.
