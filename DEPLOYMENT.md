@@ -75,9 +75,11 @@ Confirm these settings:
 5. `_mta-sts.guitard.ca` publishes the current MTA-STS policy identifier.
 6. `_smtp._tls.guitard.ca` publishes the TLS reporting record.
 
-## 6. Configure the root redirect
+## 6. Configure Cloudflare delivery rules
 
-Create a 301 redirect rule matching only the root path:
+### Redirect Rules
+
+Keep or create a 301 redirect rule named `mta-sts.guitard.ca (redirect)` matching:
 
 ```text
 lower(http.host) eq "mta-sts.guitard.ca"
@@ -93,13 +95,13 @@ https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 
 Do not create a catch-all redirect. Unknown paths must retain their real `404` status.
 
-## 7. Configure Cloudflare response headers
+### MTA-STS headers
 
 GitHub Pages publishes `_headers` as an ordinary file and does not interpret it as server configuration. The file documents the intentional production values verified by the automated checks; keep Cloudflare aligned with it.
 
-### Common MTA-STS headers
+### Response Header Transform Rules - Response Headers
 
-Keep the Response Header Transform Rule matching:
+Create a Response Header Transform Rule named `mta-sts.guitard.ca (response headers)` matching:
 
 ```text
 lower(http.host) eq "mta-sts.guitard.ca"
@@ -114,9 +116,9 @@ Configure it to:
 
 Keep the existing shared security-header rule that supplies `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
 
-### Policy cache control
+### Response Header Transform Rules - Cache Control
 
-Keep the later, policy-specific Response Header Transform Rule matching:
+Create a later Response Header Transform Rule named `mta-sts.guitard.ca (cache control)` matching:
 
 ```text
 lower(http.host) eq "mta-sts.guitard.ca"
@@ -129,7 +131,7 @@ Set `Cache-Control: no-store`. MTA-STS clients use the policy's `max_age` field 
 
 The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
 
-## 8. Preserve automated-client access
+## 7. Preserve automated-client access
 
 MTA-STS is fetched by automated mail servers rather than web browsers. Keep the Cloudflare Configuration Rule named **Automated Client Access**, matching:
 
@@ -139,7 +141,7 @@ lower(http.host) eq "mta-sts.guitard.ca"
 
 Disable Browser Integrity Check for matching requests so empty and non-browser user agents cannot be challenged. Browser Integrity Check remains enabled for the rest of the zone.
 
-## 9. Configure repository security and automation
+## 8. Configure repository security and automation
 
 Under **Settings → Code security and analysis**:
 
@@ -158,7 +160,7 @@ Under repository **General** settings, use:
 
 Issues may remain disabled because `SECURITY.md` provides a private reporting channel.
 
-## 10. Merge and verify a deployment
+## 9. Merge and verify a deployment
 
 1. Merge the pull request only after `Validate / validate` succeeds.
 2. Confirm the GitHub Pages build and deployment completes successfully.
@@ -168,7 +170,7 @@ Issues may remain disabled because `SECURITY.md` provides a private reporting ch
 
 The scheduled live monitor runs daily at 10:23 UTC. GitHub may delay scheduled workflows during periods of high load, so the manual post-deployment check remains the primary release verification.
 
-## 11. Rollback
+## 10. Rollback
 
 If a deployment or policy change fails:
 
