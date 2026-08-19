@@ -4,21 +4,15 @@
 
 ## About
 
-This repository publishes the SMTP MTA Strict Transport Security policy for
-[guitard.ca](https://guitard.ca/) at the endpoint required by
-[RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
+This repository publishes the SMTP MTA Strict Transport Security policy for [guitard.ca](https://guitard.ca/) at the endpoint required by [RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
 
 ```text
 https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 ```
 
-MTA-STS tells participating sending mail servers to authenticate the TLS
-certificate presented by an authorized `guitard.ca` mail exchanger and to
-reject delivery when a secure, authenticated connection cannot be established.
+MTA-STS tells participating sending mail servers to authenticate the TLS certificate presented by an authorized `guitard.ca` mail exchanger and to reject delivery when a secure, authenticated connection cannot be established.
 
-The subdomain is a protocol endpoint rather than a general website. Its root
-redirects to the published policy for human convenience, while every other
-unknown path returns the custom `404` page.
+The subdomain is a protocol endpoint rather than a general website. Its root redirects to the published policy for human convenience, while every other unknown path returns the custom `404` page.
 
 ---
 
@@ -49,9 +43,7 @@ _mta-sts.guitard.ca.   TXT "v=STSv1; id=20260812050000Z;"
 _smtp._tls.guitard.ca. TXT "v=TLSRPTv1; rua=mailto:security@guitard.ca"
 ```
 
-The TLS reporting record follows
-[RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports
-to `security@guitard.ca`.
+The TLS reporting record follows [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports to `security@guitard.ca`.
 
 ---
 
