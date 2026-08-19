@@ -7,8 +7,9 @@ The policy file is security-critical. Pull requests validate the repository befo
 ## 1. Prepare and validate a change
 
 1. On GitHub, upload the changed files to a new branch created from the current `main` branch. GitHub web commits are signed by GitHub and satisfy the signed commit rule.
-2. Install Node.js 24 and pnpm 11.19.0.
-3. Run:
+2. Open a pull request for the web-upload branch.
+3. Install Node.js 24 and pnpm 11.19.0.
+4. Run:
 
    ```text
    pnpm install --frozen-lockfile
@@ -16,8 +17,8 @@ The policy file is security-critical. Pull requests validate the repository befo
    pnpm run validate:live
    ```
 
-4. Open a pull request for the web-upload branch.
-5. Confirm the `Validate / validate` check runs automatically and succeeds.
+5. Open a pull request for the web-upload branch.
+6. Confirm the `Validate / Validate repository` check runs automatically and succeeds.
 
 The local checks validate formatting, HTML, CSS, JavaScript syntax, the MTA-STS policy, repository resources, documented response headers, and dependency security. The live check validates DNS, TLS reporting, HTTPS, redirects, headers, policy content, non-browser client access, assets, and the custom `404` response.
 
