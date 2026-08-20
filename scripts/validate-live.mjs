@@ -1,9 +1,9 @@
 import { resolveMx, resolveTxt } from "node:dns/promises";
 import { readFile } from "node:fs/promises";
-import { Socket } from "node:net";
-import path from "node:path";
 import { connect as tlsConnect } from "node:tls";
+import { Socket } from "node:net";
 import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -106,8 +106,7 @@ if (policyResponse) {
     "content-type": "text/plain; charset=utf-8",
     "cache-control": "no-store",
     "content-security-policy": contentSecurityPolicy,
-    "strict-transport-security":
-      "max-age=31536000; includeSubDomains; preload",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
     "x-content-type-options": "nosniff",
     "x-robots-tag": "noindex, nofollow",
   });
