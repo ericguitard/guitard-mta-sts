@@ -1,9 +1,9 @@
 import { resolveMx, resolveTxt } from "node:dns/promises";
 import { readFile } from "node:fs/promises";
-import { connect as tlsConnect } from "node:tls";
 import { Socket } from "node:net";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { connect as tlsConnect } from "node:tls";
+import { fileURLToPath } from "node:url";
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -106,7 +106,8 @@ if (policyResponse) {
     "content-type": "text/plain; charset=utf-8",
     "cache-control": "no-store",
     "content-security-policy": contentSecurityPolicy,
-    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "strict-transport-security":
+      "max-age=31536000; includeSubDomains; preload",
     "x-content-type-options": "nosniff",
     "x-robots-tag": "noindex, nofollow",
   });
@@ -378,7 +379,10 @@ async function probeMxStartTls(hostname) {
             /^250[- ]STARTTLS\b/iu.test(line),
           );
           if (!advertisesStartTls) {
-            settle({ kind: "error", reason: "STARTTLS not advertised in EHLO" });
+            settle({
+              kind: "error",
+              reason: "STARTTLS not advertised in EHLO",
+            });
             socket.destroy();
             return;
           }
