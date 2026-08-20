@@ -110,6 +110,7 @@ lower(http.host) eq "mta-sts.guitard.ca"
 Configure it to:
 
 - Remove `Access-Control-Allow-Origin`.
+- Set `Cache-Control: no-store`.
 - Set `Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
 - Remove `Speculation-Rules`.
 - Set `X-Robots-Tag: noindex, nofollow`.
