@@ -1,5 +1,7 @@
 import { resolveMx, resolveTxt } from "node:dns/promises";
 import { readFile } from "node:fs/promises";
+import { connect as tlsConnect } from "node:tls";
+import { Socket } from "node:net";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -10,9 +12,11 @@ const repositoryRoot = path.resolve(
 const origin = "https://mta-sts.guitard.ca";
 const policyPath = "/.well-known/mta-sts.txt";
 const contentSecurityPolicy =
-  "default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
-const expectedMtaStsRecord = "v=STSv1; id=20260812050000Z;";
-const expectedTlsReportRecord = "v=TLSRPTv1; rua=mailto:security@guitard.ca";
+  "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+const expectedMtaStsRecord = "v=STSv1; id=20260820180000Z";
+const expectedTlsReportRecord =
+  "v=TLSRPTv1; rua=mailto:smtp-tls-reports@guitard.ca";
+const mxTlsMinimumDays = 7;
 const errors = [];
 
 const [localPolicy, localRobots, localCss, localHtml] = await Promise.all([
@@ -277,8 +281,183 @@ try {
       );
     }
   }
+
+  await Promise.all(
+    liveMxRecords.map(({ exchange }) => probeMxStartTls(exchange)),
+  );
 } catch (error) {
   recordError(`guitard.ca MX records could not be resolved: ${error.message}`);
+}
+
+// STARTTLS certificate probe against each MX. MTA-STS in enforce mode rejects
+// delivery when a sender cannot authenticate the receiver's TLS certificate,
+// so a silent certificate regression on the receiver is a mail-blocking event.
+// This probe opens SMTP, negotiates STARTTLS, and requires a chain-verified
+// certificate valid for the MX hostname. Some hosting environments (notably
+// GitHub-hosted Actions runners) block outbound port 25; in that case the
+// probe emits a warning and skips rather than failing the workflow, because a
+// blocked-egress signal is not the same as a receiver-side regression.
+async function probeMxStartTls(hostname) {
+  const label = `MX STARTTLS ${hostname}`;
+  const socket = new Socket();
+  socket.setTimeout(15_000);
+
+  const outcome = await new Promise((resolve) => {
+    let stage = "connect";
+    let buffer = "";
+    let settled = false;
+    const settle = (value) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+
+    const readLines = (chunk) => {
+      buffer += chunk.toString("utf8");
+      const lines = buffer.split(/\r?\n/u);
+      buffer = lines.pop() ?? "";
+      return lines;
+    };
+
+    const waitForCompletion = (predicate, onComplete) => {
+      const listener = (chunk) => {
+        const lines = readLines(chunk);
+        for (const line of lines) {
+          if (!/^\d{3}[- ]/u.test(line)) continue;
+          predicate.lines.push(line);
+          if (line[3] === " ") {
+            socket.removeListener("data", listener);
+            onComplete(predicate.lines);
+            return;
+          }
+        }
+      };
+      predicate.lines = [];
+      socket.on("data", listener);
+    };
+
+    socket.once("timeout", () => {
+      settle({ kind: "error", reason: `timed out during ${stage}` });
+      socket.destroy();
+    });
+    socket.once("error", (error) => {
+      const code = error.code ?? "";
+      if (
+        stage === "connect" &&
+        (code === "ETIMEDOUT" ||
+          code === "ECONNREFUSED" ||
+          code === "EHOSTUNREACH" ||
+          code === "ENETUNREACH" ||
+          code === "EACCES")
+      ) {
+        settle({ kind: "skip", reason: `${code} on port 25` });
+      } else {
+        settle({ kind: "error", reason: `${stage}: ${error.message}` });
+      }
+    });
+
+    socket.connect({ host: hostname, port: 25 }, () => {
+      stage = "banner";
+      const banner = {};
+      waitForCompletion(banner, (lines) => {
+        if (!lines[0]?.startsWith("220")) {
+          settle({ kind: "error", reason: `banner: ${lines.join(" | ")}` });
+          socket.destroy();
+          return;
+        }
+        stage = "ehlo";
+        socket.write(`EHLO mta-sts-live-validator.guitard.ca\r\n`);
+        const ehlo = {};
+        waitForCompletion(ehlo, (ehloLines) => {
+          if (!ehloLines[0]?.startsWith("250")) {
+            settle({ kind: "error", reason: `ehlo: ${ehloLines.join(" | ")}` });
+            socket.destroy();
+            return;
+          }
+          const advertisesStartTls = ehloLines.some((line) =>
+            /^250[- ]STARTTLS\b/iu.test(line),
+          );
+          if (!advertisesStartTls) {
+            settle({ kind: "error", reason: "STARTTLS not advertised in EHLO" });
+            socket.destroy();
+            return;
+          }
+          stage = "starttls";
+          socket.write("STARTTLS\r\n");
+          const starttls = {};
+          waitForCompletion(starttls, (starttlsLines) => {
+            if (!starttlsLines[0]?.startsWith("220")) {
+              settle({
+                kind: "error",
+                reason: `starttls: ${starttlsLines.join(" | ")}`,
+              });
+              socket.destroy();
+              return;
+            }
+            stage = "tls-handshake";
+            const secureSocket = tlsConnect({
+              socket,
+              servername: hostname,
+              rejectUnauthorized: true,
+              minVersion: "TLSv1.2",
+            });
+            secureSocket.setTimeout(15_000);
+            secureSocket.once("timeout", () => {
+              settle({ kind: "error", reason: "TLS handshake timed out" });
+              secureSocket.destroy();
+            });
+            secureSocket.once("error", (tlsError) => {
+              settle({
+                kind: "error",
+                reason: `TLS handshake failed: ${tlsError.message}`,
+              });
+            });
+            secureSocket.once("secureConnect", () => {
+              if (!secureSocket.authorized) {
+                settle({
+                  kind: "error",
+                  reason: `certificate not authorized: ${secureSocket.authorizationError}`,
+                });
+                secureSocket.end();
+                return;
+              }
+              const certificate = secureSocket.getPeerCertificate();
+              const validTo = Date.parse(certificate.valid_to ?? "");
+              const remainingDays = (validTo - Date.now()) / 86_400_000;
+              if (
+                !Number.isFinite(remainingDays) ||
+                remainingDays < mxTlsMinimumDays
+              ) {
+                settle({
+                  kind: "error",
+                  reason: `certificate expires in ${Number.isFinite(remainingDays) ? remainingDays.toFixed(1) : "unknown"} days; minimum is ${mxTlsMinimumDays}.`,
+                });
+                secureSocket.end();
+                return;
+              }
+              settle({
+                kind: "ok",
+                reason: `certificate valid for ${remainingDays.toFixed(1)} more days`,
+              });
+              secureSocket.end();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  socket.destroy();
+
+  if (outcome.kind === "error") {
+    recordError(`${label} failed: ${outcome.reason}.`);
+  } else if (outcome.kind === "skip") {
+    console.warn(
+      `${label} skipped: ${outcome.reason}. Run this check from an environment with outbound port 25 available.`,
+    );
+  } else {
+    console.log(`${label}: ${outcome.reason}.`);
+  }
 }
 
 if (errors.length > 0) {
