@@ -1,35 +1,35 @@
-# MIME types and cache policy for mta-sts.guitard.ca
+# Canonical header and cache policy for mta-sts.guitard.ca.
+#
+# This file uses the Cloudflare Pages / Netlify _headers convention. Under the current GitHub Pages deployment the file is NOT interpreted at request time; runtime enforcement is performed by Cloudflare Response Header Transform rules (see DEPLOYMENT.md section 5). The file is retained as a version-controlled specification of intent and as a drop-in policy if hosting ever moves to Cloudflare Pages or Workers Assets.
+#
+# Two consequences of the current split:
+#   1. Any change to the /* or per-path blocks below that must reach production requires a matching change in the Cloudflare Transform rules. `validate-live.mjs` in .github/workflows/validate-live.yml compares live response headers against this specification and will flag drift on the next scheduled run.
+#   2. `Cache-Control: no-store` on the policy endpoint ensures that MTA-STS clients use the policy's `max_age` field for protocol caching rather than HTTP caching.
+
+# The MTA-STS protocol endpoint has no browser use case. Scripts, connections, forms, and framing are all disallowed globally; individual documents override only Content-Type, Cache-Control, and framing-sensitive headers.
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow
 
 # The direct error document may be cached for ten minutes. Unknown addresses still retain their genuine 404 response status.
 /404.html
   Content-Type: text/html; charset=utf-8
   Cache-Control: max-age=600
-  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   Referrer-Policy: no-referrer
-  X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
-  X-Robots-Tag: noindex, nofollow
 
 # CSS uses a query-string version and currently has a four-hour browser TTL.
 /css/*.css
   Content-Type: text/css; charset=utf-8
   Cache-Control: max-age=14400
-  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
-  X-Content-Type-Options: nosniff
-  X-Robots-Tag: noindex, nofollow
 
 # MTA-STS clients fetch this protocol-critical policy directly over HTTPS.
 /.well-known/mta-sts.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: no-store
-  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
-  X-Content-Type-Options: nosniff
-  X-Robots-Tag: noindex, nofollow
 
 # robots.txt is stable and currently has a four-hour browser TTL.
 /robots.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: max-age=14400
-  Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
-  X-Content-Type-Options: nosniff
-  X-Robots-Tag: noindex, nofollow

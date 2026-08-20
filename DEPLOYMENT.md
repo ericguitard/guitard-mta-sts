@@ -20,7 +20,7 @@ The policy file is security-critical. Pull requests validate the repository befo
 5. Open a pull request for the web-upload branch.
 6. Confirm the `Validate / Validate repository` check runs automatically and succeeds.
 
-The local checks validate formatting, HTML, CSS, JavaScript syntax, the MTA-STS policy, repository resources, documented response headers, and dependency security. The live check validates DNS, TLS reporting, HTTPS, redirects, headers, policy content, non-browser client access, assets, and the custom `404` response.
+The local checks validate formatting, HTML, CSS, JavaScript syntax, the MTA-STS policy, repository resources, documented response headers, and dependency security. The live check validates DNS, TLS reporting, HTTPS, redirects, headers, policy content, non-browser client access, assets, the custom `404` response, and — where the runtime environment permits outbound port 25 — the STARTTLS certificate presented by each MX in the policy.
 
 ## 2. Control policy changes
 
@@ -31,7 +31,7 @@ Before changing `.well-known/mta-sts.txt`:
 3. Update and deploy the policy file first.
 4. Confirm the policy URL returns `200`, does not redirect, uses `text/plain; charset=utf-8`, sends `Cache-Control: no-store`, and presents a valid HTTPS certificate.
 5. Change the `_mta-sts.guitard.ca` TXT record to a new unique `id` only after the updated policy is live.
-6. Review TLS aggregate reports at `security@guitard.ca` after deployment.
+6. Review TLS aggregate reports at `smtp-tls-reports@guitard.ca` after deployment.
 
 Changing the `404` page, CSS, `robots.txt`, documentation, or validation tooling does not require a new MTA-STS DNS `id` because those changes do not alter the policy.
 
@@ -110,9 +110,12 @@ lower(http.host) eq "mta-sts.guitard.ca"
 Configure it to:
 
 - Remove `Access-Control-Allow-Origin`.
-- Set `Content-Security-Policy: default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
+- Set `Cache-Control: no-store`.
+- Set `Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
 - Remove `Speculation-Rules`.
 - Set `X-Robots-Tag: noindex, nofollow`.
+
+Also disable **Cloudflare Web Analytics** for `mta-sts.guitard.ca`. MTA-STS is fetched by SMTP servers, not browsers, so the analytics beacon has no legitimate consumer. Removing it lets the CSP forbid all script sources.
 
 Keep the existing shared security-header rule that supplies `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
 
@@ -130,6 +133,12 @@ and http.response.code eq 200
 Set `Cache-Control: no-store`. MTA-STS clients use the policy's `max_age` field for protocol caching and must not use HTTP caching when retrieving an updated policy.
 
 The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
+
+### MX certificate probe
+
+The live-validation script opens SMTP to every MX in the policy, negotiates STARTTLS, and requires a chain-verified certificate valid for the MX hostname with at least seven days remaining. This is the only check that observes what senders will actually experience during MTA-STS enforcement.
+
+GitHub-hosted runners block outbound port 25 for anti-abuse reasons, so the daily scheduled workflow will emit a `skipped` warning rather than a failure for this check. Run `pnpm run validate:live` locally, from a Cloudflare Worker cron, or from any host with outbound SMTP to exercise the probe against production.
 
 ## 6. Preserve automated-client access
 
@@ -165,7 +174,7 @@ Issues may remain disabled because `SECURITY.md` provides a private reporting ch
 1. Merge the pull request only after `Validate / validate` succeeds.
 2. Confirm the GitHub Pages build and deployment completes successfully.
 3. Run **Actions → Validate live service → Run workflow** after a policy, routing, DNS, TLS, or Cloudflare change.
-4. Confirm the workflow validates the production policy, DNS records, TLS reporting, certificate, redirects, security headers, non-browser user agents, static resources, and custom `404` response.
+4. Confirm the workflow validates the production policy, DNS records, TLS reporting, certificate, redirects, security headers, non-browser user agents, static resources, custom `404` response, and MX STARTTLS certificates (where outbound port 25 is available).
 5. When the policy changes, update the MTA-STS DNS `id` only after all production checks pass.
 
 The scheduled live monitor runs daily at 10:23 UTC. GitHub may delay scheduled workflows during periods of high load, so the manual post-deployment check remains the primary release verification.

@@ -82,7 +82,14 @@ if (cname !== "mta-sts.guitard.ca") {
 }
 
 const contentSecurityPolicy =
-  "default-src 'none'; script-src https://static.cloudflareinsights.com; script-src-attr 'none'; connect-src 'self'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+const defaultsSection = "/*";
+
+const expectedDefaults = {
+  "content-security-policy": contentSecurityPolicy,
+  "x-content-type-options": "nosniff",
+  "x-robots-tag": "noindex, nofollow",
+};
 
 const expectedHeaderBlocks = new Map([
   [
@@ -90,11 +97,8 @@ const expectedHeaderBlocks = new Map([
     {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "max-age=600",
-      "content-security-policy": contentSecurityPolicy,
       "referrer-policy": "no-referrer",
-      "x-content-type-options": "nosniff",
       "x-frame-options": "DENY",
-      "x-robots-tag": "noindex, nofollow",
     },
   ],
   [
@@ -102,9 +106,6 @@ const expectedHeaderBlocks = new Map([
     {
       "content-type": "text/css; charset=utf-8",
       "cache-control": "max-age=14400",
-      "content-security-policy": contentSecurityPolicy,
-      "x-content-type-options": "nosniff",
-      "x-robots-tag": "noindex, nofollow",
     },
   ],
   [
@@ -112,9 +113,6 @@ const expectedHeaderBlocks = new Map([
     {
       "content-type": "text/plain; charset=utf-8",
       "cache-control": "no-store",
-      "content-security-policy": contentSecurityPolicy,
-      "x-content-type-options": "nosniff",
-      "x-robots-tag": "noindex, nofollow",
     },
   ],
   [
@@ -122,9 +120,6 @@ const expectedHeaderBlocks = new Map([
     {
       "content-type": "text/plain; charset=utf-8",
       "cache-control": "max-age=14400",
-      "content-security-policy": contentSecurityPolicy,
-      "x-content-type-options": "nosniff",
-      "x-robots-tag": "noindex, nofollow",
     },
   ],
 ]);
@@ -178,8 +173,31 @@ function parseHeaderBlocks(document) {
 const parsedHeaderBlocks = parseHeaderBlocks(headers);
 
 for (const pathName of parsedHeaderBlocks.keys()) {
+  if (pathName === defaultsSection) continue;
   if (!expectedHeaderBlocks.has(pathName)) {
     errors.push(`_headers contains an unexpected ${pathName} section.`);
+  }
+}
+
+const defaultsBlock = parsedHeaderBlocks.get(defaultsSection);
+if (!defaultsBlock) {
+  errors.push(`_headers is missing the ${defaultsSection} defaults section.`);
+} else {
+  for (const [name, expectedValue] of Object.entries(expectedDefaults)) {
+    const actualValue = defaultsBlock.get(name);
+    if (actualValue !== expectedValue) {
+      errors.push(
+        `_headers ${defaultsSection} must set ${name} to ${expectedValue}; found ${actualValue ?? "nothing"}.`,
+      );
+    }
+  }
+
+  for (const name of defaultsBlock.keys()) {
+    if (!(name in expectedDefaults)) {
+      errors.push(
+        `_headers ${defaultsSection} contains unexpected header ${name}.`,
+      );
+    }
   }
 }
 
@@ -201,7 +219,11 @@ for (const [pathName, expectedHeaders] of expectedHeaderBlocks) {
   }
 
   for (const name of actualHeaders.keys()) {
-    if (!(name in expectedHeaders)) {
+    if (name in expectedDefaults) {
+      errors.push(
+        `_headers ${pathName} redeclares default header ${name}; remove it so ${defaultsSection} provides the single source.`,
+      );
+    } else if (!(name in expectedHeaders)) {
       errors.push(`_headers ${pathName} contains unexpected header ${name}.`);
     }
   }

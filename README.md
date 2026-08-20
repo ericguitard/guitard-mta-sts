@@ -36,7 +36,7 @@ version: STSv1
 mode: enforce
 mx: mx01.mail.icloud.com
 mx: mx02.mail.icloud.com
-max_age: 31557600
+max_age: 2592000
 ```
 
 | Field | Value | Purpose |
@@ -45,16 +45,16 @@ max_age: 31557600
 | `mode` | `enforce` | Reject delivery when policy validation fails |
 | `mx` | `mx01.mail.icloud.com` | Primary iCloud Mail exchanger |
 | `mx` | `mx02.mail.icloud.com` | Secondary iCloud Mail exchanger |
-| `max_age` | `31557600` | RFC maximum cache lifetime in seconds |
+| `max_age` | `2592000` | 30-day cache lifetime; bounded rollback window without weakening enforcement |
 
 ### DNS
 
 ```text
-_mta-sts.guitard.ca.   TXT "v=STSv1; id=20260812050000Z;"
-_smtp._tls.guitard.ca. TXT "v=TLSRPTv1; rua=mailto:security@guitard.ca"
+_mta-sts.guitard.ca.   TXT "v=STSv1; id=20260820180000Z"
+_smtp._tls.guitard.ca. TXT "v=TLSRPTv1; rua=mailto:smtp-tls-reports@guitard.ca"
 ```
 
-The TLS reporting record follows [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports to `security@guitard.ca`.
+The TLS reporting record follows [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports to `smtp-tls-reports@guitard.ca`.
 
 ---
 
