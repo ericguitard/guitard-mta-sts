@@ -16,6 +16,17 @@ The subdomain is a protocol endpoint rather than a general website. Its root red
 
 ---
 
+## Contents
+
+- Published MTA-STS policy and custom-domain configuration
+- Custom protocol-endpoint `404` page and stylesheet
+- Documented Cloudflare response headers
+- Local policy, resource, dependency, and production validation
+- Pull-request validation and scheduled live-service monitoring
+- Dependabot configuration for npm and GitHub Actions
+
+---
+
 ## Current Production Configuration
 
 ### Policy
@@ -44,17 +55,6 @@ _smtp._tls.guitard.ca. TXT "v=TLSRPTv1; rua=mailto:security@guitard.ca"
 ```
 
 The TLS reporting record follows [RFC 8460](https://www.rfc-editor.org/info/rfc8460/) and sends aggregate reports to `security@guitard.ca`.
-
----
-
-## Contents
-
-- Published MTA-STS policy and custom-domain configuration
-- Custom protocol-endpoint `404` page and stylesheet
-- Documented Cloudflare response headers
-- Local policy, resource, dependency, and production validation
-- Pull-request validation and scheduled live-service monitoring
-- Dependabot configuration for npm and GitHub Actions
 
 ---
 
