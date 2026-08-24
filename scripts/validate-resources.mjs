@@ -13,6 +13,9 @@ const cname = (
   await readFile(path.join(repositoryRoot, "CNAME"), "utf8")
 ).trim();
 const headers = await readFile(path.join(repositoryRoot, "_headers"), "utf8");
+const siteManifest = JSON.parse(
+  await readFile(path.join(repositoryRoot, "site.manifest.json"), "utf8"),
+);
 
 for (const match of html.matchAll(/(?:href|src)="([^"]+)"/gu)) {
   const resource = match[1].split(/[?#]/u, 1)[0];
@@ -87,6 +90,7 @@ const defaultsSection = "/*";
 
 const expectedDefaults = {
   "content-security-policy": contentSecurityPolicy,
+  "cache-control": "no-store",
   "x-content-type-options": "nosniff",
   "x-robots-tag": "noindex, nofollow",
 };
@@ -96,7 +100,6 @@ const expectedHeaderBlocks = new Map([
     "/404.html",
     {
       "content-type": "text/html; charset=utf-8",
-      "cache-control": "max-age=600",
       "referrer-policy": "no-referrer",
       "x-frame-options": "DENY",
     },
@@ -105,21 +108,18 @@ const expectedHeaderBlocks = new Map([
     "/css/*.css",
     {
       "content-type": "text/css; charset=utf-8",
-      "cache-control": "max-age=14400",
     },
   ],
   [
     "/.well-known/mta-sts.txt",
     {
       "content-type": "text/plain; charset=utf-8",
-      "cache-control": "no-store",
     },
   ],
   [
     "/robots.txt",
     {
       "content-type": "text/plain; charset=utf-8",
-      "cache-control": "max-age=14400",
     },
   ],
 ]);
@@ -231,6 +231,24 @@ for (const [pathName, expectedHeaders] of expectedHeaderBlocks) {
 
 if (/Access-Control-Allow-Origin:/iu.test(headers)) {
   errors.push("_headers must not enable cross-origin access.");
+}
+
+const expectedPublishedFiles = [
+  ".nojekyll",
+  ".well-known/mta-sts.txt",
+  "404.html",
+  "CNAME",
+  "css/style.css",
+  "robots.txt",
+];
+if (
+  siteManifest.version !== 1 ||
+  JSON.stringify([...(siteManifest.files ?? [])].sort()) !==
+    JSON.stringify([...expectedPublishedFiles].sort())
+) {
+  errors.push(
+    "site.manifest.json must publish exactly the six required protocol-site files.",
+  );
 }
 
 if (errors.length > 0) {
