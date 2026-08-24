@@ -5,6 +5,8 @@ import { Socket } from "node:net";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
+import { socketTimeoutOutcome } from "./starttls-outcome.mjs";
+
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -97,6 +99,9 @@ if (rootResponse) {
   if (rootResponse.headers.has("speculation-rules")) {
     recordError("/ must not return speculation-rules.");
   }
+  if (rootResponse.headers.get("cache-control") !== "no-store") {
+    recordError("/ must return cache-control: no-store.");
+  }
 }
 
 const policyResponse = await fetchLive(policyPath);
@@ -132,7 +137,7 @@ if (robotsResponse) {
   validateStatus(robotsResponse, "/robots.txt", 200);
   validateHeaders(robotsResponse, "/robots.txt", {
     "content-type": "text/plain; charset=utf-8",
-    "cache-control": "max-age=14400",
+    "cache-control": "no-store",
     "content-security-policy": contentSecurityPolicy,
     "x-content-type-options": "nosniff",
     "x-robots-tag": "noindex, nofollow",
@@ -154,7 +159,7 @@ if (!stylesheetMatch) {
     validateStatus(stylesheetResponse, stylesheetPath, 200);
     validateHeaders(stylesheetResponse, stylesheetPath, {
       "content-type": "text/css; charset=utf-8",
-      "cache-control": "max-age=14400",
+      "cache-control": "no-store",
       "content-security-policy": contentSecurityPolicy,
       "x-content-type-options": "nosniff",
       "x-robots-tag": "noindex, nofollow",
@@ -168,7 +173,7 @@ if (errorDocumentResponse) {
   validateStatus(errorDocumentResponse, "/404.html", 200);
   validateHeaders(errorDocumentResponse, "/404.html", {
     "content-type": "text/html; charset=utf-8",
-    "cache-control": "max-age=600",
+    "cache-control": "no-store",
     "content-security-policy": contentSecurityPolicy,
     "referrer-policy": "no-referrer",
     "x-content-type-options": "nosniff",
@@ -191,6 +196,7 @@ if (missingResponse) {
     "/live-validation-probe-that-must-not-exist",
     {
       "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
       "content-security-policy": contentSecurityPolicy,
       "referrer-policy": "no-referrer",
       "x-content-type-options": "nosniff",
@@ -337,7 +343,7 @@ async function probeMxStartTls(hostname) {
     };
 
     socket.once("timeout", () => {
-      settle({ kind: "error", reason: `timed out during ${stage}` });
+      settle(socketTimeoutOutcome(stage));
       socket.destroy();
     });
     socket.once("error", (error) => {
