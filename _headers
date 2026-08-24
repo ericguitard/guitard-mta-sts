@@ -4,32 +4,29 @@
 #
 # Two consequences of the current split:
 #   1. Any change to the /* or per-path blocks below that must reach production requires a matching change in the Cloudflare Transform rules. `validate-live.mjs` in .github/workflows/validate-live.yml compares live response headers against this specification and will flag drift on the next scheduled run.
-#   2. `Cache-Control: no-store` on the policy endpoint ensures that MTA-STS clients use the policy's `max_age` field for protocol caching rather than HTTP caching.
+#   2. `Cache-Control: no-store` on every response matches the deliberately conservative production transform rule. MTA-STS clients use the policy's `max_age` field for protocol caching rather than HTTP caching.
 
 # The MTA-STS protocol endpoint has no browser use case. Scripts, connections, forms, and framing are all disallowed globally; individual documents override only Content-Type, Cache-Control, and framing-sensitive headers.
 /*
   Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Cache-Control: no-store
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex, nofollow
 
-# The direct error document may be cached for ten minutes. Unknown addresses still retain their genuine 404 response status.
+# Unknown addresses retain their genuine 404 response status and are not cached.
 /404.html
   Content-Type: text/html; charset=utf-8
-  Cache-Control: max-age=600
   Referrer-Policy: no-referrer
   X-Frame-Options: DENY
 
-# CSS uses a query-string version and currently has a four-hour browser TTL.
+# The small supporting stylesheet inherits the global no-store policy.
 /css/*.css
   Content-Type: text/css; charset=utf-8
-  Cache-Control: max-age=14400
 
 # MTA-STS clients fetch this protocol-critical policy directly over HTTPS.
 /.well-known/mta-sts.txt
   Content-Type: text/plain; charset=utf-8
-  Cache-Control: no-store
 
-# robots.txt is stable and currently has a four-hour browser TTL.
+# robots.txt also inherits the global no-store policy.
 /robots.txt
   Content-Type: text/plain; charset=utf-8
-  Cache-Control: max-age=14400

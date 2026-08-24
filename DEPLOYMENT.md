@@ -8,7 +8,7 @@ The policy file is security-critical. Pull requests validate the repository befo
 
 1. On GitHub, upload the changed files to a new branch created from the current `main` branch. GitHub web commits are signed by GitHub and satisfy the signed commit rule.
 2. Open a pull request for the web-upload branch.
-3. Install Node.js 24 and pnpm 11.19.0.
+3. Install Node.js 24 and pnpm 11.23.0.
 4. Run:
 
    ```text
@@ -39,11 +39,11 @@ Changing the `404` page, CSS, `robots.txt`, documentation, or validation tooling
 
 Under **Settings → Pages**:
 
-1. Publish from the `main` branch and repository root.
+1. Set the deployment source to **GitHub Actions**.
 2. Keep the custom domain set to `mta-sts.guitard.ca`.
 3. Keep **Enforce HTTPS** enabled.
 
-GitHub Pages publishes after a change reaches `main`. The required pull-request check prevents an unvalidated change from being merged and deployed.
+The deployment workflow validates the repository, packages only the six files declared in `site.manifest.json`, publishes that artifact, and then validates production. Repository source, workflows, lockfiles, and documentation are never included in the public site.
 
 ## 4. Protect `main`
 
@@ -56,7 +56,7 @@ Under **Settings → Rules → Rulesets → Protect main**, retain these rules:
 - Require the `validate` GitHub Actions status check
 - Block force pushes
 
-Required approvals are set to `0` for the solo-maintainer repository. Increase the value when an independent reviewer is available. Keep the repository-admin bypass only for emergency recovery.
+Required approvals are set to `0` for the solo-maintainer repository. Increase the value when an independent reviewer is available. Do not configure an administrator bypass; use a reviewed rollback pull request for emergency recovery.
 
 Under **Settings → Actions → General**:
 
@@ -119,18 +119,7 @@ Also disable **Cloudflare Web Analytics** for `mta-sts.guitard.ca`. MTA-STS is f
 
 Keep the existing shared security-header rule that supplies `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, HSTS, Permissions Policy, and the other zone-wide protections. Do not set the same response header in both rules.
 
-### Response Header Transform Rules - Cache Control
-
-Create a later Response Header Transform Rule named `mta-sts.guitard.ca (cache control)` matching:
-
-```text
-lower(http.host) eq "mta-sts.guitard.ca"
-and http.request.method in {"GET" "HEAD"}
-and http.request.uri.path eq "/.well-known/mta-sts.txt"
-and http.response.code eq 200
-```
-
-Set `Cache-Control: no-store`. MTA-STS clients use the policy's `max_age` field for protocol caching and must not use HTTP caching when retrieving an updated policy.
+The single hostname-wide rule intentionally applies `Cache-Control: no-store` to the policy, support files, redirects, and errors. MTA-STS clients use the policy's `max_age` field for protocol caching and must not use HTTP caching when retrieving an updated policy.
 
 The policy endpoint does not require cross-origin browser access. MTA-STS clients fetch it directly over HTTPS.
 
@@ -172,7 +161,7 @@ Issues may remain disabled because `SECURITY.md` provides a private reporting ch
 ## 8. Merge and verify a deployment
 
 1. Merge the pull request only after `Validate / validate` succeeds.
-2. Confirm the GitHub Pages build and deployment completes successfully.
+2. Confirm **Deploy production** validates the repository, packages the public artifact, deploys GitHub Pages, and validates production successfully.
 3. Run **Actions → Validate live service → Run workflow** after a policy, routing, DNS, TLS, or Cloudflare change.
 4. Confirm the workflow validates the production policy, DNS records, TLS reporting, certificate, redirects, security headers, non-browser user agents, static resources, custom `404` response, and MX STARTTLS certificates (where outbound port 25 is available).
 5. When the policy changes, update the MTA-STS DNS `id` only after all production checks pass.
@@ -185,7 +174,7 @@ If a deployment or policy change fails:
 
 1. Revert the merge through a new signed pull request.
 2. Wait for `Validate / validate` to succeed and merge the rollback.
-3. Confirm GitHub Pages redeploys the reverted `main` branch.
+3. Confirm **Deploy production** redeploys the reverted artifact from `main`.
 4. Restore the previous Cloudflare rule or DNS record when the failure originated outside the repository.
 5. Run the live-service workflow and review TLS reports after recovery.
 

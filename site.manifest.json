@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": [
+    ".nojekyll",
+    ".well-known/mta-sts.txt",
+    "404.html",
+    "CNAME",
+    "css/style.css",
+    "robots.txt"
+  ]
+}
