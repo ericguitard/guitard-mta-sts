@@ -50,11 +50,13 @@
             <path class="mail-mark-fold" d="m11 17 13 10 13-10"></path>
             <path class="mail-mark-lock" d="M29.5 26.5h9v8h-9zm2-1v-2a2.5 2.5 0 0 1 5 0v2"></path>
           </svg>
+
           <span>
             <strong>Guitard Inc.</strong>
             <small>Mail transport security</small>
           </span>
         </a>
+
         <p class="protocol-badge">MTA-STS · ENFORCED</p>
       </header>
 
@@ -64,9 +66,7 @@
           <p class="status-code" aria-hidden="true">404</p>
           <h1 id="error-title">Strict transport. Wrong address.</h1>
           <p class="error-message">MTA-STS protects mail arriving at guitard.ca, but this web address is not part of the published policy route.</p>
-          <div class="actions">
-            <a class="action action-primary" href="/.well-known/mta-sts.txt">View MTA-STS Policy</a>
-          </div>
+          <div class="actions"><a class="action action-primary" href="/.well-known/mta-sts.txt">View MTA-STS Policy</a></div>
         </section>
 
         <section class="route-panel" aria-labelledby="route-title">
@@ -74,7 +74,9 @@
             <p>Route diagnostic</p>
             <span aria-hidden="true">TLS</span>
           </div>
+
           <h2 id="route-title">Secure delivery path</h2>
+
           <ol class="route-list">
             <li class="route-step route-complete">
               <span class="route-marker" aria-hidden="true">✓</span>
@@ -83,6 +85,7 @@
                 <small>mta-sts.guitard.ca</small>
               </span>
             </li>
+
             <li class="route-step route-complete">
               <span class="route-marker" aria-hidden="true">✓</span>
               <span>
@@ -90,6 +93,7 @@
                 <small>HTTPS transport established</small>
               </span>
             </li>
+
             <li class="route-step route-failed">
               <span class="route-marker" aria-hidden="true">×</span>
               <span>
@@ -98,6 +102,7 @@
               </span>
             </li>
           </ol>
+
           <p class="diagnostic-result"><strong>Result</strong><span>Permanent Failure · Not Found</span></p>
         </section>
       </main>
