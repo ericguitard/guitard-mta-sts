@@ -251,6 +251,15 @@ if (
   );
 }
 
+if (
+  siteManifest.mtaSts?.dnsName !== "_mta-sts.guitard.ca" ||
+  !/^v=STSv1; id=[A-Za-z0-9._~-]+$/u.test(siteManifest.mtaSts?.dnsRecord ?? "")
+) {
+  errors.push(
+    "site.manifest.json must declare the MTA-STS DNS name and a valid policy record.",
+  );
+}
+
 if (errors.length > 0) {
   console.error("Site resource validation failed:\n");
   for (const error of errors) console.error(`- ${error}`);
