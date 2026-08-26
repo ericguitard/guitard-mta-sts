@@ -15,18 +15,21 @@ const origin = "https://mta-sts.guitard.ca";
 const policyPath = "/.well-known/mta-sts.txt";
 const contentSecurityPolicy =
   "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
-const expectedMtaStsRecord = "v=STSv1; id=20260820180000Z";
 const expectedTlsReportRecord =
   "v=TLSRPTv1; rua=mailto:smtp-tls-reports@guitard.ca";
 const mxTlsMinimumDays = 7;
 const errors = [];
 
-const [localPolicy, localRobots, localCss, localHtml] = await Promise.all([
-  readFile(path.join(repositoryRoot, ".well-known", "mta-sts.txt")),
-  readFile(path.join(repositoryRoot, "robots.txt")),
-  readFile(path.join(repositoryRoot, "css", "style.css")),
-  readFile(path.join(repositoryRoot, "404.html"), "utf8"),
-]);
+const [siteManifest, localPolicy, localRobots, localCss, localHtml] =
+  await Promise.all([
+    readFile(path.join(repositoryRoot, "site.manifest.json"), "utf8").then(
+      JSON.parse,
+    ),
+    readFile(path.join(repositoryRoot, ".well-known", "mta-sts.txt")),
+    readFile(path.join(repositoryRoot, "robots.txt")),
+    readFile(path.join(repositoryRoot, "css", "style.css")),
+    readFile(path.join(repositoryRoot, "404.html"), "utf8"),
+  ]);
 
 function recordError(message) {
   errors.push(message);
@@ -249,7 +252,7 @@ async function validateTxtRecord(name, expectedValue) {
 }
 
 await Promise.all([
-  validateTxtRecord("_mta-sts.guitard.ca", expectedMtaStsRecord),
+  validateTxtRecord(siteManifest.mtaSts.dnsName, siteManifest.mtaSts.dnsRecord),
   validateTxtRecord("_smtp._tls.guitard.ca", expectedTlsReportRecord),
 ]);
 

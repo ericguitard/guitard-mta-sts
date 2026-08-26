@@ -7,7 +7,7 @@ The policy file is security-critical. Pull requests validate the repository befo
 ## 1. Prepare and validate a change
 
 1. On GitHub, upload the changed files to a new branch created from the current `main` branch. GitHub web commits are signed by GitHub and satisfy the signed commit rule.
-2. Open a pull request for the web-upload branch.
+2. Review the branch diff for unintended policy, DNS, or public-file changes.
 3. Install Node.js 24 and pnpm 11.23.0.
 4. Run:
 
