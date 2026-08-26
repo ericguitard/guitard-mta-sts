@@ -1,5 +1,9 @@
 {
   "version": 1,
+  "mtaSts": {
+    "dnsName": "_mta-sts.guitard.ca",
+    "dnsRecord": "v=STSv1; id=20260820180000Z"
+  },
   "files": [
     ".nojekyll",
     ".well-known/mta-sts.txt",
