@@ -4,7 +4,7 @@ This document is the single source of truth for policy change control, validatio
 
 The policy file is security-critical. Pull requests validate the repository before merging, GitHub Pages publishes `main`, Cloudflare supplies the public redirect and response rules, and the live-service workflow checks production daily.
 
-## 1. Prepare and validate a change
+## 1. Prepare and Validate a Change
 
 1. On GitHub, upload the changed files to a new branch created from the current `main` branch. GitHub web commits are signed by GitHub and satisfy the signed commit rule.
 2. Review the branch diff for unintended policy, DNS, or public-file changes.
