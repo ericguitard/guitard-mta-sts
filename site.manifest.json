@@ -10,6 +10,7 @@
     "404.html",
     "CNAME",
     "css/style.css",
-    "robots.txt"
+    "robots.txt",
+    "site.webmanifest"
   ]
 }

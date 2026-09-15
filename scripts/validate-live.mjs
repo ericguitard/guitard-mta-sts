@@ -14,22 +14,29 @@ const repositoryRoot = path.resolve(
 const origin = "https://mta-sts.guitard.ca";
 const policyPath = "/.well-known/mta-sts.txt";
 const contentSecurityPolicy =
-  "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const expectedTlsReportRecord =
   "v=TLSRPTv1; rua=mailto:smtp-tls-reports@guitard.ca";
 const mxTlsMinimumDays = 7;
 const errors = [];
 
-const [siteManifest, localPolicy, localRobots, localCss, localHtml] =
-  await Promise.all([
-    readFile(path.join(repositoryRoot, "site.manifest.json"), "utf8").then(
-      JSON.parse,
-    ),
-    readFile(path.join(repositoryRoot, ".well-known", "mta-sts.txt")),
-    readFile(path.join(repositoryRoot, "robots.txt")),
-    readFile(path.join(repositoryRoot, "css", "style.css")),
-    readFile(path.join(repositoryRoot, "404.html"), "utf8"),
-  ]);
+const [
+  siteManifest,
+  localPolicy,
+  localRobots,
+  localCss,
+  localErrorHtml,
+  localWebManifest,
+] = await Promise.all([
+  readFile(path.join(repositoryRoot, "site.manifest.json"), "utf8").then(
+    JSON.parse,
+  ),
+  readFile(path.join(repositoryRoot, ".well-known", "mta-sts.txt")),
+  readFile(path.join(repositoryRoot, "robots.txt")),
+  readFile(path.join(repositoryRoot, "css", "style.css")),
+  readFile(path.join(repositoryRoot, "404.html"), "utf8"),
+  readFile(path.join(repositoryRoot, "site.webmanifest")),
+]);
 
 function recordError(message) {
   errors.push(message);
@@ -150,7 +157,7 @@ if (robotsResponse) {
 
 const stylesheetMatch =
   /<link rel="stylesheet" href="(\/css\/style\.css\?v=[^"]+)">/u.exec(
-    localHtml,
+    localErrorHtml,
   );
 
 if (!stylesheetMatch) {
@@ -183,6 +190,41 @@ if (errorDocumentResponse) {
     "x-frame-options": "DENY",
     "x-robots-tag": "noindex, nofollow",
   });
+  await validateExactBody(
+    errorDocumentResponse,
+    "/404.html",
+    Buffer.from(localErrorHtml),
+  );
+}
+
+const manifestResponse = await fetchLive("/site.webmanifest");
+if (manifestResponse) {
+  validateStatus(manifestResponse, "/site.webmanifest", 200);
+  validateHeaders(manifestResponse, "/site.webmanifest", {
+    "content-type": "application/manifest+json; charset=utf-8",
+    "cache-control": "no-store",
+    "content-security-policy": contentSecurityPolicy,
+    "x-content-type-options": "nosniff",
+    "x-robots-tag": "noindex, nofollow",
+  });
+  await validateExactBody(
+    manifestResponse,
+    "/site.webmanifest",
+    localWebManifest,
+  );
+}
+
+const faviconResponse = await fetchLive("/favicon.ico");
+if (faviconResponse) {
+  validateStatus(faviconResponse, "/favicon.ico", 301);
+  if (
+    faviconResponse.headers.get("location") !==
+    "https://assets.guitard.ca/favicon.ico"
+  ) {
+    recordError(
+      `/favicon.ico must redirect exactly to https://assets.guitard.ca/favicon.ico; found ${faviconResponse.headers.get("location") ?? "no Location header"}.`,
+    );
+  }
 }
 
 const missingResponse = await fetchLive(
@@ -219,7 +261,13 @@ if (missingResponse) {
 }
 
 for (const asset of [
+  ["https://assets.guitard.ca/favicon.ico", "image/vnd.microsoft.icon"],
   ["https://assets.guitard.ca/favicon.svg", "image/svg+xml"],
+  ["https://assets.guitard.ca/favicon-16x16.png", "image/png"],
+  ["https://assets.guitard.ca/favicon-32x32.png", "image/png"],
+  ["https://assets.guitard.ca/apple-touch-icon.png", "image/png"],
+  ["https://assets.guitard.ca/android-chrome-192x192.png", "image/png"],
+  ["https://assets.guitard.ca/android-chrome-512x512.png", "image/png"],
   ["https://assets.guitard.ca/og-image.png", "image/png"],
 ]) {
   try {
@@ -478,6 +526,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    "Live MTA-STS validation passed: policy, DNS, TLS reporting, redirects, headers, assets, and custom 404 are correct.",
+    "Live MTA-STS validation passed: policy, DNS, TLS reporting, redirects, manifest, headers, assets, and custom 404 are correct.",
   );
 }

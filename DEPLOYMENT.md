@@ -2,7 +2,7 @@
 
 This document is the single source of truth for policy change control, validation, release, hosting configuration, production monitoring, and rollback procedures for `mta-sts.guitard.ca`.
 
-The policy file is security-critical. Pull requests validate the repository before merging, GitHub Pages publishes `main`, Cloudflare supplies the public redirect and response rules, and the live-service workflow checks production daily.
+The policy file is security-critical. Pull requests validate the repository before merging, GitHub Pages publishes `main`, Cloudflare supplies the favicon redirect and response rules, and the live-service workflow checks production daily.
 
 ## 1. Prepare and Validate a Change
 
@@ -20,7 +20,7 @@ The policy file is security-critical. Pull requests validate the repository befo
 5. Open a pull request for the web-upload branch.
 6. Confirm the `Validate / Validate repository` check runs automatically and succeeds.
 
-The local checks validate formatting, HTML, CSS, JavaScript syntax, the MTA-STS policy, repository resources, documented response headers, and dependency security. The live check validates DNS, TLS reporting, HTTPS, redirects, headers, policy content, non-browser client access, assets, the custom `404` response, and — where the runtime environment permits outbound port 25 — the STARTTLS certificate presented by each MX in the policy.
+The local checks validate formatting, HTML, CSS, JavaScript syntax, the MTA-STS policy, repository resources, documented response headers, favicon manifest, and dependency security. The live check validates DNS, TLS reporting, HTTPS, redirects, headers, policy content, non-browser client access, assets, the custom `404` response, and — where the runtime environment permits outbound port 25 — the STARTTLS certificate presented by each MX in the policy.
 
 ## 2. Control policy changes
 
@@ -43,7 +43,7 @@ Under **Settings → Pages**:
 2. Keep the custom domain set to `mta-sts.guitard.ca`.
 3. Keep **Enforce HTTPS** enabled.
 
-The deployment workflow validates the repository, packages only the six files declared in `site.manifest.json`, publishes that artifact, and then validates production. Repository source, workflows, lockfiles, and documentation are never included in the public site.
+The deployment workflow validates the repository, packages only the seven files declared in `site.manifest.json`, publishes that artifact, and then validates production. Repository source, workflows, lockfiles, and documentation are never included in the public site.
 
 ## 4. Protect `main`
 
@@ -79,7 +79,7 @@ Confirm the following existing settings:
 
 ### Redirect Rules
 
-Keep or create a 301 redirect rule named `mta-sts.guitard.ca (redirect)` matching:
+Keep the existing 301 redirect rule named `mta-sts.guitard.ca (redirect)` matching:
 
 ```text
 lower(http.host) eq "mta-sts.guitard.ca"
@@ -93,7 +93,17 @@ Redirect to:
 https://mta-sts.guitard.ca/.well-known/mta-sts.txt
 ```
 
-Do not create a catch-all redirect. Unknown paths must retain their real `404` status.
+Do not preserve the query string.
+
+Create a second 301 redirect rule named `mta-sts.guitard.ca (favicon)` matching:
+
+```text
+lower(http.host) eq "mta-sts.guitard.ca"
+and http.request.method in {"GET" "HEAD"}
+and http.request.uri.path eq "/favicon.ico"
+```
+
+Redirect to `https://assets.guitard.ca/favicon.ico` and do not preserve the query string. Do not create a catch-all redirect. The MTA-STS policy endpoint must remain directly accessible without a redirect, and unknown paths must retain their real `404` status.
 
 ### MTA-STS headers
 
@@ -111,7 +121,7 @@ Configure it to:
 
 - Remove `Access-Control-Allow-Origin`.
 - Set `Cache-Control: no-store`.
-- Set `Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
+- Set `Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`.
 - Remove `Speculation-Rules`.
 - Set `X-Robots-Tag: noindex, nofollow`.
 
@@ -161,7 +171,7 @@ Issues may remain disabled because `SECURITY.md` provides a private reporting ch
 ## 8. Merge and verify a deployment
 
 1. Merge the pull request only after `Validate / validate` succeeds.
-2. Confirm **Deploy production** validates the repository, packages the public artifact, deploys GitHub Pages, and validates production successfully.
+2. Confirm **Deploy production** validates the repository, packages the public artifact, deploys GitHub Pages, and validates the favicon package and policy service successfully.
 3. Run **Actions → Validate live service → Run workflow** after a policy, routing, DNS, TLS, or Cloudflare change.
 4. Confirm the workflow validates the production policy, DNS records, TLS reporting, certificate, redirects, security headers, non-browser user agents, static resources, custom `404` response, and MX STARTTLS certificates (where outbound port 25 is available).
 5. When the policy changes, update the MTA-STS DNS `id` only after all production checks pass.

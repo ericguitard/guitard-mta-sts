@@ -19,6 +19,7 @@ The subdomain is a protocol endpoint rather than a general website. Its root red
 ## Contents
 
 - Published MTA-STS policy and custom-domain configuration
+- Web app manifest referencing the centralized favicon package
 - Custom protocol-endpoint `404` page and stylesheet
 - Documented Cloudflare response headers
 - Local policy, resource, dependency, and production validation
