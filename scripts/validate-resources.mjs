@@ -7,7 +7,9 @@ const repositoryRoot = path.resolve(
   "..",
 );
 const errors = [];
-const html = await readFile(path.join(repositoryRoot, "404.html"), "utf8");
+const htmlDocuments = new Map([
+  ["404.html", await readFile(path.join(repositoryRoot, "404.html"), "utf8")],
+]);
 const robots = await readFile(path.join(repositoryRoot, "robots.txt"), "utf8");
 const cname = (
   await readFile(path.join(repositoryRoot, "CNAME"), "utf8")
@@ -16,31 +18,82 @@ const headers = await readFile(path.join(repositoryRoot, "_headers"), "utf8");
 const siteManifest = JSON.parse(
   await readFile(path.join(repositoryRoot, "site.manifest.json"), "utf8"),
 );
+const webManifest = JSON.parse(
+  await readFile(path.join(repositoryRoot, "site.webmanifest"), "utf8"),
+);
 
-for (const match of html.matchAll(/(?:href|src)="([^"]+)"/gu)) {
-  const resource = match[1].split(/[?#]/u, 1)[0];
-  if (!resource.startsWith("/") || resource === "/.well-known/mta-sts.txt") {
+for (const [fileName, html] of htmlDocuments) {
+  for (const match of html.matchAll(/(?:href|src)="([^"]+)"/gu)) {
+    const resource = match[1].split(/[?#]/u, 1)[0];
+    if (!resource.startsWith("/") || resource === "/.well-known/mta-sts.txt") {
+      continue;
+    }
+
+    const localPath = path.join(repositoryRoot, resource.slice(1));
+    try {
+      await access(localPath);
+    } catch {
+      errors.push(
+        `Missing local resource referenced by ${fileName}: ${resource}`,
+      );
+    }
+  }
+
+  if (/<(?:script|style)\b/iu.test(html)) {
+    errors.push(
+      `${fileName} must not contain inline script or style elements.`,
+    );
+  }
+
+  if (/\son[a-z]+\s*=/iu.test(html)) {
+    errors.push(`${fileName} must not contain inline event handlers.`);
+  }
+
+  if (!html.includes('href="/.well-known/mta-sts.txt"')) {
+    errors.push(`${fileName} must link to the published MTA-STS policy.`);
+  }
+
+  if (!html.includes('rel="manifest" href="/site.webmanifest"')) {
+    errors.push(`${fileName} must reference /site.webmanifest.`);
+  }
+}
+
+if (
+  webManifest.id !== "/" ||
+  webManifest.start_url !== "/" ||
+  webManifest.scope !== "/"
+) {
+  errors.push("site.webmanifest must use / for id, start_url, and scope.");
+}
+
+const webManifestIcons = Array.isArray(webManifest.icons)
+  ? webManifest.icons
+  : [];
+for (const icon of webManifestIcons) {
+  let iconUrl;
+  try {
+    iconUrl = new URL(icon.src);
+  } catch {
+    errors.push(
+      `site.webmanifest contains invalid icon URL ${JSON.stringify(icon.src)}.`,
+    );
     continue;
   }
-
-  const localPath = path.join(repositoryRoot, resource.slice(1));
-  try {
-    await access(localPath);
-  } catch {
-    errors.push(`Missing local resource referenced by 404.html: ${resource}`);
+  if (iconUrl.origin !== "https://assets.guitard.ca") {
+    errors.push(
+      `site.webmanifest icon must use https://assets.guitard.ca: ${icon.src}.`,
+    );
   }
 }
 
-if (/<(?:script|style)\b/iu.test(html)) {
-  errors.push("404.html must not contain inline script or style elements.");
-}
-
-if (/\son[a-z]+\s*=/iu.test(html)) {
-  errors.push("404.html must not contain inline event handlers.");
-}
-
-if (!html.includes('href="/.well-known/mta-sts.txt"')) {
-  errors.push("404.html must link to the published MTA-STS policy.");
+for (const size of ["192x192", "512x512"]) {
+  if (
+    !webManifestIcons.some(
+      (icon) => icon.type === "image/png" && icon.sizes === size,
+    )
+  ) {
+    errors.push(`site.webmanifest must declare a ${size} PNG icon.`);
+  }
 }
 
 const robotsDirectives = robots
@@ -85,7 +138,7 @@ if (cname !== "mta-sts.guitard.ca") {
 }
 
 const contentSecurityPolicy =
-  "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+  "default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const defaultsSection = "/*";
 
 const expectedDefaults = {
@@ -120,6 +173,12 @@ const expectedHeaderBlocks = new Map([
     "/robots.txt",
     {
       "content-type": "text/plain; charset=utf-8",
+    },
+  ],
+  [
+    "/site.webmanifest",
+    {
+      "content-type": "application/manifest+json; charset=utf-8",
     },
   ],
 ]);
@@ -240,6 +299,7 @@ const expectedPublishedFiles = [
   "CNAME",
   "css/style.css",
   "robots.txt",
+  "site.webmanifest",
 ];
 if (
   siteManifest.version !== 1 ||
@@ -247,7 +307,7 @@ if (
     JSON.stringify([...expectedPublishedFiles].sort())
 ) {
   errors.push(
-    "site.manifest.json must publish exactly the six required protocol-site files.",
+    "site.manifest.json must publish exactly the seven required protocol-site files.",
   );
 }
 

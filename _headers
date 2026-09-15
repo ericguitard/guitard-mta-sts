@@ -6,9 +6,9 @@
 #   1. Any change to the /* or per-path blocks below that must reach production requires a matching change in the Cloudflare Transform rules. `validate-live.mjs` in .github/workflows/validate-live.yml compares live response headers against this specification and will flag drift on the next scheduled run.
 #   2. `Cache-Control: no-store` on every response matches the deliberately conservative production transform rule. MTA-STS clients use the policy's `max_age` field for protocol caching rather than HTTP caching.
 
-# The MTA-STS protocol endpoint has no browser use case. Scripts, connections, forms, and framing are all disallowed globally; individual documents override only Content-Type, Cache-Control, and framing-sensitive headers.
+# The MTA-STS protocol endpoint has no browser use case. Scripts, connections, forms, and framing are disallowed globally; the custom error document may load its local stylesheet and manifest plus the centrally hosted Guitard Inc. image assets.
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'none'; script-src-attr 'none'; connect-src 'none'; style-src 'self'; img-src https://assets.guitard.ca; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   Cache-Control: no-store
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex, nofollow
@@ -30,3 +30,7 @@
 # robots.txt also inherits the global no-store policy.
 /robots.txt
   Content-Type: text/plain; charset=utf-8
+
+# Browser metadata references the canonical icon package on assets.guitard.ca.
+/site.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
