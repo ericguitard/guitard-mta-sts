@@ -4,7 +4,7 @@
 
 ## About
 
-This repository publishes the SMTP MTA Strict Transport Security policy for [guitard.ca](https://guitard.ca/) at the endpoint required by [RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
+This repository publishes the SMTP MTA-STS (Mail Transfer Agent Strict Transport Security) policy for [guitard.ca](https://guitard.ca/) at the endpoint required by [RFC 8461](https://www.rfc-editor.org/info/rfc8461/):
 
 ```text
 https://mta-sts.guitard.ca/.well-known/mta-sts.txt
