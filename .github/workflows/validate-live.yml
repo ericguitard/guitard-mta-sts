@@ -25,5 +25,9 @@ jobs:
         with:
           node-version: 24
 
+      - name: Check GitHub Pages origin certificate renewal
+        run: node scripts/validate-origin-tls.mjs
+
       - name: Validate live MTA-STS service
+        if: ${{ !cancelled() }}
         run: node scripts/validate-live.mjs
