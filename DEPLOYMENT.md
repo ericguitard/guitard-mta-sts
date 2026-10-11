@@ -121,6 +121,14 @@ origin verification hides the regression.
 References: [GitHub custom-domain HTTPS troubleshooting](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/troubleshooting-custom-domains-and-github-pages)
 and [Cloudflare HTTP 526](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-526/).
 
+Recovery on 2026-10-11 succeeded after approved temporary DNS-only routing and
+removing/re-adding the custom domain in Pages. The replacement certificate was
+verified on all four origins and expires 2027-01-09 at 18:00:34 UTC. Cloudflare
+proxying and Pages HTTPS enforcement were restored. Live validation run
+38155123936, attempt 2, passed. The policy and DNS identifier were unchanged.
+Recovery does not prove future automatic renewal through the proxy; retain the
+advance-expiry monitor.
+
 ### Redirect Rules
 
 Keep the existing 301 redirect rule named `mta-sts.guitard.ca (redirect)` matching:
