@@ -77,6 +77,58 @@ Confirm the following existing settings:
 5. `_mta-sts.guitard.ca` publishes the current MTA-STS policy identifier.
 6. `_smtp._tls.guitard.ca` publishes the TLS reporting record.
 
+### Origin certificate recovery
+
+Cloudflare's public TLS certificate and GitHub Pages' origin certificate are
+independent. On 2026-10-11 the live monitor returned HTTP 526 because the Pages
+certificate for `mta-sts.guitard.ca` expired on 2026-10-10 at 23:01:10 UTC. All
+four Pages IPv4 origins presented the expired certificate. MX STARTTLS passed;
+the failure was HTTPS retrieval of the policy, not the mail exchangers.
+
+The daily workflow now runs `node scripts/validate-origin-tls.mjs`. It resolves
+`ericguitard.github.io` directly, connects to every returned IPv4 address using
+the custom hostname as TLS SNI, requires normal certificate verification, and
+fails when fewer than 30 days remain. Both this check and the existing public
+service checks run even if one fails. Check Actions failure notifications and
+address certificate warnings before expiration.
+
+To recover an expired certificate:
+
+1. Inspect **Settings → Pages** for the custom domain, DNS check result and
+   certificate provisioning status. Inspect Cloudflare DNS and rules for this
+   hostname. Proxying, redirects, challenges or origin TLS enforcement may
+   interfere with domain validation; confirm the actual blocker in the dashboards.
+2. Confirm the CNAME target is `ericguitard.github.io`, there are no conflicting
+   records, and CAA permits `letsencrypt.org` (it did during this incident).
+3. If issuance requires DNS-only routing, arrange a maintenance window: this
+   temporarily bypasses required Cloudflare headers and redirects, and HTTPS
+   remains unusable until Pages issues the replacement certificate. Recheck DNS
+   in Pages; remove and re-add the same custom domain only if needed to restart
+   provisioning. GitHub documents that issuance can take an hour.
+4. Confirm `node scripts/validate-origin-tls.mjs` passes on every origin before
+   restoring proxied delivery. Keep Full (strict) and Enforce HTTPS enabled for
+   normal production traffic. Restore and verify Cloudflare response rules.
+5. Run `node scripts/validate-live.mjs` and rerun the daily workflow. Verify
+   policy retrieval with empty and Postfix user agents as well as a browser.
+   Do not change the policy or its DNS identifier for a certificate-only repair.
+
+A redeploy, cache purge, longer retries or accepting HTTP 526 does not repair
+renewal. Resolve the hosting configuration that blocked issuance, or plan a move
+to hosting with integrated certificate management if proxying prevents reliable
+renewal. Repeated manual issuance is not a permanent fix, and disabling strict
+origin verification hides the regression.
+
+References: [GitHub custom-domain HTTPS troubleshooting](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/troubleshooting-custom-domains-and-github-pages)
+and [Cloudflare HTTP 526](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-526/).
+
+Recovery on 2026-10-11 succeeded after approved temporary DNS-only routing and
+removing/re-adding the custom domain in Pages. The replacement certificate was
+verified on all four origins and expires 2027-01-09 at 18:00:34 UTC. Cloudflare
+proxying and Pages HTTPS enforcement were restored. Live validation run
+38155123936, attempt 2, passed. The policy and DNS identifier were unchanged.
+Recovery does not prove future automatic renewal through the proxy; retain the
+advance-expiry monitor.
+
 ### Redirect Rules
 
 Keep the existing 301 redirect rule named `mta-sts.guitard.ca (redirect)` matching:
