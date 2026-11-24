@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { socketTimeoutOutcome } from "./starttls-outcome.mjs";
+import { fetchWithRetry } from "./fetch-with-retry.mjs";
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -49,13 +50,12 @@ async function fetchLive(
   const url = new URL(pathName, origin);
 
   try {
-    return await fetch(url, {
+    return await fetchWithRetry(url, {
       redirect: "manual",
       headers: {
         accept: "*/*",
         "user-agent": userAgent,
       },
-      signal: AbortSignal.timeout(15_000),
     });
   } catch (error) {
     recordError(`${url} could not be fetched: ${error.message}`);
@@ -271,9 +271,8 @@ for (const asset of [
   ["https://assets.guitard.ca/og-image.png", "image/png"],
 ]) {
   try {
-    const response = await fetch(asset[0], {
+    const response = await fetchWithRetry(asset[0], {
       redirect: "manual",
-      signal: AbortSignal.timeout(15_000),
     });
     if (response.status !== 200) {
       recordError(`${asset[0]} must return 200; found ${response.status}.`);
